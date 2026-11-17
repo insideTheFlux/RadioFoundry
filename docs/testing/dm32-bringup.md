@@ -128,6 +128,7 @@ Untested on the radio. VOX has no analog level tap here: it measures the microph
 
 | Check | Expected | If not |
 |---|---|---|
+| Diagnostics line `mic lvl L pk P n N on`, FM channel, `vox.level` being read (a poll every 50 ms keeps the meter on) | N grows by about 100 a second and the line ends `on`: the mic PCM flows in idle FM receive. This needs no sound, so it works with the programming cable in (which cuts the microphone) | N stays 0 or `off`: the PCM interrupt (`audio_pcm.c`) or the route, GPIO 0x2E must be 0 here (`speaker_source()`) |
 | Debug link view `vox.level` (poll it), FM channel, squelch closed | Rises when someone talks at the radio, falls back to near 0 in silence | Stays 0: the PCM interrupt (`audio_pcm.c`) or the mic route, GPIO 0x2E must be 0 here (`speaker_source()`) |
 | `vox.mic=1`, talk | The radio keys after the VOX delay and unkeys after the hold | Threshold and gain (`radio-features.md` 3.4) |
 | PTT, then release | Normal FM transmit; the route is 1 only during the transmission | `fm_tx()` and `speaker_source()` |
