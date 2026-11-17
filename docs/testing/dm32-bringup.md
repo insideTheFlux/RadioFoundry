@@ -120,6 +120,18 @@ MMDVMHost or a CPS on the same serial port: the host link switches by what it re
 | CTCSS on the air at the right frequency | C7000 TX sub-audio; or switch to the FD6818's (`fd6818_set_tx_ctcss`) |
 | PA off and receiver back on PTT release | `tx_off()` |
 
+### 7.1 VOX
+
+Untested on the radio. VOX has no analog level tap here: it measures the microphone on the codec ADC's mic PCM
+([hardware-dm32.md](../spec/hardware-dm32.md) 9, `radio-features.md` 3.4). In idle FM receive the microphone route
+(GPIO 0x2E) is held low so the codec hears it.
+
+| Check | Expected | If not |
+|---|---|---|
+| Debug link view `vox.level` (poll it), FM channel, squelch closed | Rises when someone talks at the radio, falls back to near 0 in silence | Stays 0: the PCM interrupt (`audio_pcm.c`) or the mic route, GPIO 0x2E must be 0 here (`speaker_source()`) |
+| `vox.mic=1`, talk | The radio keys after the VOX delay and unkeys after the hold | Threshold and gain (`radio-features.md` 3.4) |
+| PTT, then release | Normal FM transmit; the route is 1 only during the transmission | `fm_tx()` and `speaker_source()` |
+
 ## 8. DMR receive
 
 Select a DMR channel with traffic (or let the SDR bench send a call), then `diag`.

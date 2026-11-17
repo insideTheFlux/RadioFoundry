@@ -680,7 +680,15 @@ static void speaker_source(void)
 	bool analog = fm_open && !aprs_listen;
 	hrc_pin_write(PIN_SPK_SOURCE, analog);
 	if (!transmitting) {
-		hrc_pin_write(PIN_MIC_PATH, !analog);
+		bool mic_analog = !analog;
+#if CONFIG_VOX
+		// VOX measures the microphone on the codec ADC's PCM (audio_pcm.c), which hears it only with the route at 0.
+		// An FM transmission sets the route itself before PTT (fm_tx), so idle FM receive can leave it there
+		if (mode == RADIO_MODE_FM) {
+			mic_analog = false;
+		}
+#endif
+		hrc_pin_write(PIN_MIC_PATH, mic_analog);
 	}
 	if (mode == RADIO_MODE_FM && !transmitting) {
 		bool play = fm_open && aprs_listen;
