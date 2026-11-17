@@ -22,6 +22,7 @@ typedef struct {
 	volatile uint8_t level;		// 0..100, the envelope
 	volatile uint16_t peak;		// the last block's peak from its mean, 0..32767 (diagnostics)
 	volatile uint32_t blocks;	// blocks measured (diagnostics)
+	volatile uint16_t peak_max;	// the loudest block's peak since the board cleared it (diagnostics): a reader too slow for the envelope still sees a short sound. miclevel_reset keeps it
 } miclevel_t;
 
 // 0..100 for x over `bits` bits: 100 x log2(x) / bits, from an integer log2 (msb plus a linear mantissa, within 0.1
@@ -80,6 +81,9 @@ static inline void miclevel_block(miclevel_t *m, const volatile int16_t *pcm, ui
 	}
 	m->level = env;
 	m->peak = pk;
+	if (pk > m->peak_max) {
+		m->peak_max = pk;
+	}
 	m->blocks++;
 }
 

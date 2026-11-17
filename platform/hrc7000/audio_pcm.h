@@ -54,6 +54,8 @@ void hrc_audio_pcm_reset_stats(void);
 uint8_t hrc_audio_pcm_mic_level(void);
 // The meter now: its level, the last half's peak from its mean (0..32767), halves measured, running. Doesn't start it
 void hrc_audio_pcm_mic_stats(uint8_t *level, uint16_t *peak, uint32_t *halves, bool *on);
+// The loudest half's peak since the diagnostics were last reset (hrc_audio_pcm_reset_stats), while the meter ran
+uint16_t hrc_audio_pcm_mic_peak_max(void);
 #define HRC_MIC_LEVEL		hrc_audio_pcm_mic_level
 #else
 #define HRC_MIC_LEVEL		NULL

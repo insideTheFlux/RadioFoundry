@@ -115,8 +115,10 @@ static void test_envelope(void)
 	CHECK(mid_level < loud_level && loud_level - mid_level <= DECAY);
 	miclevel_block(&m, mid, HALF);
 	CHECK(m.level == mid_level);
+	CHECK(m.peak_max == miclevel_peak(loud, HALF));	// the loudest block since the start, through the release
 	miclevel_reset(&m);
 	CHECK(m.level == 0 && m.peak == 0 && m.blocks == 44);	// the count keeps running for diagnostics
+	CHECK(m.peak_max == miclevel_peak(loud, HALF));	// a meter restart keeps the hold; the board clears it
 }
 
 // Tones of known level against the core's threshold. The scale puts 0 dBFS at 100 and 0.72 dB per step, so

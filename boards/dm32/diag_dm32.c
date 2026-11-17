@@ -228,6 +228,8 @@ bool dm32_diag_line(uint8_t i, char *buf, uint8_t len)
 		put(&o, " n ");
 		put_u(&o, halves);
 		put(&o, on ? " on" : " off");
+		put(&o, " pm ");
+		put_u(&o, hrc_audio_pcm_mic_peak_max());
 		break;
 	}
 #endif

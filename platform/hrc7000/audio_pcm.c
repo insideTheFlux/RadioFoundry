@@ -408,6 +408,9 @@ void hrc_audio_pcm_stats(uint32_t *b, uint32_t *ov, uint32_t *un)
 void hrc_audio_pcm_reset_stats(void)
 {
 	blocks = overruns = underruns = 0;
+#if CONFIG_VOX
+	meter.peak_max = 0;
+#endif
 }
 
 #if CONFIG_VOX
@@ -434,6 +437,11 @@ uint8_t hrc_audio_pcm_mic_level(void)
 	hrc7000_audio_bits(modem, C7_AUDIO_PCM_MIC, 0);
 	hrc_irq_restore(s);
 	return 0;
+}
+
+uint16_t hrc_audio_pcm_mic_peak_max(void)
+{
+	return meter.peak_max;
 }
 
 void hrc_audio_pcm_mic_stats(uint8_t *level, uint16_t *peak, uint32_t *halves, bool *on)
