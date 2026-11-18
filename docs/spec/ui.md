@@ -691,13 +691,13 @@ HIL: `tests/hil/test_ui.py` (`tests/hil/README.md`) replays the main sequences o
   `CONFIG_UI_COLOR` (section 5) has no such rows. A color other than
   Default is the list and tile focus (with black text) and Home's channel number (on the light theme the number stays
   the text color: the light shades don't read on white). The filled bar (on by default) is reverse video: the status
-  strip's background in the color (light gray with Default, white in the high-contrast theme), its text and icons
+  strip's background in the color (amber with Default in the dark theme, light gray in the light theme, white in the high-contrast theme), its text and icons
   black, the IDLE pill inverse on it; RX, TX and NO TX keep their own pill colors and words (P5). On it the pill is the strip's full height (a one-cell
   pill left a line of the strip's color under it) against the bezel, its corners rounded by two pixels. Left of the
   pill's middle the strip is the screen's background, so no strip color shows beside its left end. On the right a
   one-pixel black edge follows the curve: the pill colors are close in lightness to the strip colors, so hue alone
   would not separate them. Warnings on the strip (SCAN, MON, ROAM, unread messages, the lock, a low battery) keep
-  a color: a dark shade picked per strip color, dark amber where it reads and dark blue on red, orange and pink, at
+  a color: a dark shade picked per strip color, dark amber where it reads and dark blue on red, orange and pink and on the dark theme's amber default strip, at
   least 5:1 on its strip after RGB565 rounding. The shades are light so black
   text reads on them (at least 7.5:1 after RGB565 rounding); the red is lighter and pinker than TX's red, and there is
   no green, which would hide the RX pill. Gallery: `home_dmr*`, `home_plain`, `channels*` (section 7).
