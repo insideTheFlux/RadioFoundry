@@ -714,6 +714,16 @@ static void test_crash_bits(void)
 	CHECK(settings_crash_mode(&s) == 2 && settings_crash_contact(&s) == 1024);
 	CHECK((s.accent & (SETTINGS_ACCENT_COLOR | SETTINGS_ACCENT_PLAIN)) == (5 | SETTINGS_ACCENT_PLAIN));
 	CHECK(settings_theme(&s) == 2 && settings_updown_home(&s) == 1);
+	// The extra themes: an older record (ui_palette 0) reads the theme field; a palette wins over it; a value out of
+	// range reads the theme field
+	CHECK(settings_ui_theme(&s) == 2);
+	s.ui_palette = SETTINGS_PALETTE_CRYO;
+	CHECK(settings_ui_theme(&s) == 3);
+	s.ui_palette = SETTINGS_PALETTE_EMBER_CRYO;
+	CHECK(settings_ui_theme(&s) == 4);
+	s.ui_palette = 3;
+	CHECK(settings_ui_theme(&s) == 2);
+	s.ui_palette = 0;
 	for (uint16_t n = 0; n <= 2047; n++) {
 		settings_set_crash_contact(&s, n);
 		if (settings_crash_contact(&s) != n || settings_theme(&s) != 2 || settings_updown_home(&s) != 1) {

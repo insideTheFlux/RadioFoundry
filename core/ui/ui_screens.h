@@ -176,9 +176,10 @@ typedef struct {
 	color_t chnum;			// Home's channel number
 	color_t strip_bg;		// the filled status strip's background (its text is pill_dark_fg)
 	color_t strip_warn;		// warnings on it
+	color_t strip_off;		// the empty signal bars on it
 } ui_colors_t;
 extern ui_colors_t ui_col;
-// Color theme on color displays (Settings > Display): 0 dark, 1 light, 2 high contrast. After ui_layout_init
+// Color theme on color displays (Settings > Display): 0 dark, 1 light, 2 high contrast, 3 Cryo, 4 Ember Cryo. After ui_layout_init
 void ui_theme_set(uint8_t theme);
 // Color displays (Settings > Display): the highlight color (UI_ACCENT_*, ui_svc.h) for list and tile focus and Home's
 // channel number, and whether the status strip is filled with it. Both re-apply the theme's colors

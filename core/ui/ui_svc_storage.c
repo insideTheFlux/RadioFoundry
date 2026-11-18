@@ -267,7 +267,7 @@ int32_t ui_svc_setting_get(uint8_t id)
 		return (st.ui_flags & SETTINGS_UI_NO_VIBRATE) == 0;
 	case UI_SET_THEME:
 		settings_read(&st);
-		return settings_theme(&st);
+		return settings_ui_theme(&st);
 	case UI_SET_ACCENT:
 		settings_read(&st);
 		return st.accent & SETTINGS_ACCENT_COLOR;
@@ -470,7 +470,11 @@ bool ui_svc_setting_set(uint8_t id, int32_t value)
 	case UI_SET_AUTO_OFF_MIN:
 		st = settings_begin();
 		if (id == UI_SET_THEME) {
-			st->theme = (uint8_t)((st->theme & ~SETTINGS_SMALL_MASK) | clamp16(value, 0, 2));
+			// 0..2 are the theme field alone; 3 and 4 are an extra palette with the theme field at Dark, which is what
+			// firmware without the extra themes reads
+			uint16_t th = clamp16(value, 0, 4);
+			st->ui_palette = th > 2 ? (uint8_t)(th - 2) : 0;
+			st->theme = (uint8_t)((st->theme & ~SETTINGS_SMALL_MASK) | (th > 2 ? 0 : th));
 		} else if (id == UI_SET_ACCENT) {
 			st->accent = (uint8_t)((st->accent & ~SETTINGS_ACCENT_COLOR) |
 					       clamp16(value, 0, SETTINGS_ACCENT_COLOR));

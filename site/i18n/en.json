@@ -287,6 +287,8 @@
  "screen.in_theme": "{screen}, {theme} theme",
  "theme.light": "light",
  "theme.high_contrast": "high-contrast",
+ "theme.cryo": "Cryo",
+ "theme.ember_cryo": "Ember Cryo",
  "color.red": "red",
  "color.orange": "orange",
  "color.yellow": "yellow",

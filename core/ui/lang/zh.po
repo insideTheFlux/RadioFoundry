@@ -3490,6 +3490,16 @@ msgid "High contrast"
 msgstr "高对比度"
 
 #: core/ui/ui_menus.c
+msgctxt "SET_VALUE_THEME_CRYO"
+msgid "Cryo"
+msgstr "Cryo"
+
+#: core/ui/ui_menus.c
+msgctxt "SET_VALUE_THEME_EMBER_CRYO"
+msgid "Ember Cryo"
+msgstr "Ember Cryo"
+
+#: core/ui/ui_menus.c
 msgctxt "VALUE_DEFAULT"
 msgid "Default"
 msgstr "默认"

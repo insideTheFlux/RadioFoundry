@@ -243,7 +243,11 @@ typedef struct {
 	// A Tier III kill kept across a restart (dmr-trunking.md 7.9; appended: an older record reads none):
 	// SETTINGS_T3_KILLED set, no DMR at all until a factory reset
 	uint8_t t3_kill;
-	uint8_t reserved10[2];		// 0
+	// The extra color themes (Settings > Display > Theme, docs/spec/ui.md 8; was reserved10[0]: an older record reads
+	// 0): 0 = the theme field decides (Dark, Light, High contrast), SETTINGS_PALETTE_* otherwise. The theme field is
+	// kept 0 (Dark) beside one, so firmware without the extra themes shows Dark
+	uint8_t ui_palette;
+	uint8_t reserved10;		// 0
 } settings_t;
 
 // Pages: settings_t is stored as records of SETTINGS_PAGE_BYTES each (settings-store.md 2.1). Only the pages its size
@@ -331,6 +335,15 @@ static inline void settings_set_aprs_cp_ssid(settings_t *s, uint8_t ssid_plus_1)
 #define SETTINGS_SMALL_MASK	0x03u
 #define SETTINGS_HOME_LABEL_FIRST	0x80u
 static inline uint8_t settings_theme(const settings_t *s) { return (s->theme & 3u) <= 2u ? s->theme & 3u : 0; }
+// settings_t.ui_palette: the extra color themes
+#define SETTINGS_PALETTE_CRYO		1u
+#define SETTINGS_PALETTE_EMBER_CRYO	2u
+// The theme as ui_theme_set numbers it: 0 dark, 1 light, 2 high contrast, 3 Cryo, 4 Ember Cryo
+static inline uint8_t settings_ui_theme(const settings_t *s)
+{
+	return s->ui_palette >= SETTINGS_PALETTE_CRYO && s->ui_palette <= SETTINGS_PALETTE_EMBER_CRYO ?
+	       (uint8_t)(2u + s->ui_palette) : settings_theme(s);
+}
 static inline uint8_t settings_updown_home(const settings_t *s)
 {
 	return (s->updown_home & 3u) <= 2u ? s->updown_home & 3u : 0;
