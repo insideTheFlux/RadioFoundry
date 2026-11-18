@@ -6435,9 +6435,10 @@ static const tr_id_t n_backlight[] = { TRX(SET_VALUE_BACKLIGHT_5S_20S, "5s/20s")
 	TRN(SET_VALUE_BACKLIGHT_1M_DIM, "1m/dim"), TRN(SET_VALUE_BACKLIGHT_2M_DIM, "2m/dim"), TRN(VALUE_NEVER, "Never")
 };
 #if CONFIG_UI_COLOR
-static const int16_t v_theme[] = { 0, 1, 2 };
+static const int16_t v_theme[] = { 0, 1, 2, 3, 4 };
 static const tr_id_t n_theme[] = { TRN(SET_VALUE_THEME_DARK, "Dark"), TRN(SET_VALUE_THEME_LIGHT, "Light"),
-	TRN(SET_VALUE_THEME_HIGH_CONTRAST, "High contrast") };
+	TRN(SET_VALUE_THEME_HIGH_CONTRAST, "High contrast"), TRN(SET_VALUE_THEME_CRYO, "Cryo"),
+	TRN(SET_VALUE_THEME_EMBER_CRYO, "Ember Cryo") };
 static const int16_t v_accent[] = { UI_ACCENT_DEFAULT, UI_ACCENT_RED, UI_ACCENT_ORANGE, UI_ACCENT_YELLOW, UI_ACCENT_TEAL,
 				     UI_ACCENT_BLUE, UI_ACCENT_PURPLE, UI_ACCENT_PINK };
 static const tr_id_t n_accent[] = { TRN(VALUE_DEFAULT, "Default"), TRN(SET_VALUE_ACCENT_RED, "Red"),

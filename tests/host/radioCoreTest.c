@@ -4814,6 +4814,24 @@ static void test_ui_settings(void)
 	CHECK(ui_svc_setting_set(UI_SET_POS_SEND_S, -1) && ui_svc_setting_get(UI_SET_POS_SEND_S) == 0);
 	CHECK(ui_svc_setting_set(UI_SET_GPS, 0) && ui_svc_setting_get(UI_SET_GPS) == 0);
 	CHECK(ui_svc_setting_set(UI_SET_THEME, -3) && ui_svc_setting_get(UI_SET_THEME) == 0);
+	// The extra themes (3 Cryo, 4 Ember Cryo) are stored beside the theme field, which stays at Dark for firmware
+	// without them; setting 0..2 again clears the extra theme; out of range clamps
+	{
+		settings_t ts;
+		CHECK(ui_svc_setting_set(UI_SET_THEME, 3) && ui_svc_setting_get(UI_SET_THEME) == 3);
+		settings_read(&ts);
+		CHECK(ts.ui_palette == SETTINGS_PALETTE_CRYO && settings_theme(&ts) == 0);
+		CHECK(ui_svc_setting_set(UI_SET_THEME, 4) && ui_svc_setting_get(UI_SET_THEME) == 4);
+		settings_read(&ts);
+		CHECK(ts.ui_palette == SETTINGS_PALETTE_EMBER_CRYO && settings_theme(&ts) == 0);
+		CHECK(ui_svc_setting_set(UI_SET_THEME, 2) && ui_svc_setting_get(UI_SET_THEME) == 2);
+		settings_read(&ts);
+		CHECK(ts.ui_palette == 0 && settings_theme(&ts) == 2);
+		CHECK(ui_svc_setting_set(UI_SET_THEME, 99) && ui_svc_setting_get(UI_SET_THEME) == 4);
+		CHECK(ui_svc_setting_set(UI_SET_THEME, 0) && ui_svc_setting_get(UI_SET_THEME) == 0);
+		settings_read(&ts);
+		CHECK(ts.ui_palette == 0);
+	}
 	// The highlight color and the filled strip share settings_t.accent: setting one keeps the other. A zero byte (new
 	// or older records) is the defaults: the theme's highlight, the strip filled
 	CHECK(ui_svc_setting_get(UI_SET_ACCENT) == 0 && ui_svc_setting_get(UI_SET_STRIP) == 1);

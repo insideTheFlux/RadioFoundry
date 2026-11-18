@@ -469,7 +469,7 @@ static void storage_section(dl_text_t *t)
 	// comes through here, stack-check.md), and the lock not held while formatting
 	const settings_t *sv = settings_begin();
 	unsigned auto_lock_s = sv->auto_lock_s, long_press_ms = sv->long_press_ms, repeat_ms = sv->repeat_ms;
-	unsigned mic_gain = sv->mic_gain, theme = settings_theme(sv), ui_flags = sv->ui_flags;
+	unsigned mic_gain = sv->mic_gain, theme = settings_ui_theme(sv), ui_flags = sv->ui_flags;
 	int ref_trim = sv->ref_trim_ppb;
 	unsigned updown_home = settings_updown_home(sv), low_batt_pct = sv->low_batt_pct, auto_off_min = sv->auto_off_min;
 	unsigned privacy_type = sv->privacy_type[0], privacy_active = sv->privacy_active;

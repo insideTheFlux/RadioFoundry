@@ -352,6 +352,35 @@ static void test_hc_strip_white(void)
 	CHECK(ui_col.strip_bg == RGB565(216, 216, 216));
 }
 
+// The Cryo and Ember Cryo themes (3 and 4): their own ground and default strip, and the highlight colors work as in
+// the others; Dark, Light and an out of range theme keep their colors
+static void test_extra_themes(void)
+{
+	ui_accent_set(UI_ACCENT_DEFAULT);
+	ui_theme_set(3);
+	CHECK(ui_col.bg == RGB565(3, 13, 18) && ui_col.strip_bg == RGB565(170, 236, 246));
+	CHECK(ui_col.strip_warn == RGB565(136, 68, 0) && ui_col.tx == RGB565(255, 104, 40));
+	CHECK(ui_col.idle == ui_col.line);
+	CHECK(ui_col.strip_off == RGB565(96, 96, 96));	// the empty signal bars stay neutral, not the teal divider color
+	ui_theme_set(4);
+	CHECK(ui_col.bg == RGB565(3, 13, 18) && ui_col.strip_bg == RGB565(255, 176, 48));
+	CHECK(ui_col.strip_warn == RGB565(0, 32, 120) && ui_col.tx == RGB565(255, 76, 60));
+	CHECK(ui_col.idle == ui_col.line);	// the palette slot Ember Cryo saves on a 16-color panel
+	CHECK(ui_col.strip_off == RGB565(96, 96, 96));
+	ui_accent_set(UI_ACCENT_RED);
+	CHECK(ui_col.strip_bg == RGB565(240, 112, 112) && ui_col.focus == RGB565(240, 112, 112));
+	CHECK(ui_col.strip_warn == RGB565(0, 32, 120));	// the red strip's own warning color
+	ui_accent_set(UI_ACCENT_DEFAULT);
+	ui_theme_set(0);
+	CHECK(ui_col.bg == RGB565(0, 0, 0) && ui_col.strip_bg == RGB565(216, 216, 216) && ui_col.strip_warn == RGB565(136, 68, 0));
+	CHECK(ui_col.strip_off == ui_col.idle);	// the other themes keep their idle color on the strip
+	ui_theme_set(1);
+	CHECK(ui_col.bg == RGB565(255, 255, 255) && ui_col.strip_bg == RGB565(216, 216, 216));
+	ui_theme_set(9);	// out of range: Dark
+	CHECK(ui_col.bg == RGB565(0, 0, 0));
+	ui_theme_set(0);
+}
+
 static void test_big_text(void)
 {
 	hal_display_t d = disp;
@@ -653,6 +682,7 @@ int main(void)
 	test_idle_pill_contrast();
 	test_big_text();
 	test_hc_strip_white();
+	test_extra_themes();
 
 	printf(fails ? "# FAILED gfxTest: %d\n" : "# PASSED gfxTest\n", fails);
 	return fails != 0;

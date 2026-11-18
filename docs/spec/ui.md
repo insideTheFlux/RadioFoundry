@@ -616,8 +616,8 @@ The gallery draws a color page (Home with its filled status bar, the Channels li
 `UI_GALLERY_COLORS` names, as `<screen>__<color>.png` right after the page, on color displays only; screens that only
 differ in color (`home_plain`) are left out at 128x64. The list is set in
 `.github/workflows/ui-gallery.yml` (`docs/dev/ci.md`), and `make ui-gallery` reads it from there. Home (filled and plain
-status bar), RX, TX, the Channels list and Settings > Display are also drawn in the light and high-contrast themes, as
-`<screen>__light.png` and `<screen>__high_contrast.png` (color displays).
+status bar), RX, TX, the Channels list and Settings > Display are also drawn in the light, high-contrast, Cryo and Ember Cryo
+themes, as `<screen>__light.png`, `<screen>__high_contrast.png`, `<screen>__cryo.png` and `<screen>__ember_cryo.png` (color displays).
 
 
 Geometries: `160x120i5` (160x120 visible, 5 px inset left and right), `160x128` (both 160 px classes render through the 4 bpp frame buffer, as the boards do),
@@ -686,13 +686,16 @@ HIL: `tests/hil/test_ui.py` (`tests/hil/README.md`) replays the main sequences o
 - Freq trim (Advanced, the last row: Up from the top) is shown only on a radio whose board has `hal_radio_t.ref_trim`
   (`UI_FEAT_REF_TRIM`). The row shows the trim in ppm and opens the Freq Trim page (`freq-trim`, section 2).
 - Voice prompts are dimmed ("Voice prompts aren't built yet: no recorded speech").
-- Theme switches the color palette (dark, light, high contrast). Highlight color (Default, Red, Orange, Yellow, Teal,
+- Theme switches the color palette (dark, light, high contrast, Cryo, Ember Cryo: `settings_t.theme` 0..2, and the extra
+  themes in `settings_t.ui_palette`, [settings-store.md](settings-store.md) 3; Cryo and Ember Cryo are dark: a teal-black ground,
+  with ice text and a pale ice strip, or cream and copper text and an amber strip). Highlight color (Default, Red, Orange, Yellow, Teal,
   Light blue, Purple, Pink) and Filled status bar (Settings > Display, `settings_t.accent`) are for color displays
   too. On a 1 bpp display the three rows are dimmed ("Colors are for color screens"); a build without
   `CONFIG_UI_COLOR` (section 5) has no such rows. A color other than
   Default is the list and tile focus (with black text) and Home's channel number (on the light theme the number stays
   the text color: the light shades don't read on white). The filled bar (on by default) is reverse video: the status
-  strip's background in the color (light gray with Default, white in the high-contrast theme), its text and icons
+  strip's background in the color (light gray with Default in the dark and light themes, white in the high-contrast theme, pale ice in
+  Cryo, amber in Ember Cryo), its text and icons
   black, the IDLE pill inverse on it; RX, TX and NO TX keep their own pill colors and words (P5). On it the pill is the strip's full height (a one-cell
   pill left a line of the strip's color under it) against the bezel, its corners rounded by two pixels. Left of the
   pill's middle the strip is the screen's background, so no strip color shows beside its left end. On the right a

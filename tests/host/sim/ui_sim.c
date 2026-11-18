@@ -3517,7 +3517,7 @@ static bool run_token(char *t, char *err, size_t len)
 	return press(t, false, err, len);
 }
 
-const char *const sim_themes[SIM_THEME_COUNT] = { "dark", "light", "high_contrast" };	// ui_theme_set's order
+const char *const sim_themes[SIM_THEME_COUNT] = { "dark", "light", "high_contrast", "cryo", "ember_cryo" };	// ui_theme_set's order
 
 int sim_theme_find(const char *name)
 {

@@ -33,7 +33,8 @@ static bool ui_strip_fill;
 // (reverse video: the color as background, text and icons black) and the focus highlight (black text), so the two
 // match; also Home's channel number. All are light shades: black on each is at least 7.5:1 after RGB565 rounding.
 // The red is lighter and pinker than TX's (the TX pill also says TX); there is no green, which would hide the RX
-// pill. Default keeps the theme's blue focus; its filled strip is light gray (white in high contrast). Built without CONFIG_UI_COLOR (radios
+// pill. Default keeps the theme's own focus; its filled strip is light gray (white in high contrast, pale ice in
+// Cryo, amber in Ember Cryo). Built without CONFIG_UI_COLOR (radios
 // with only a monochrome screen) the theme's own colors stay
 static void accent_apply(void)
 {
@@ -67,8 +68,14 @@ static void accent_apply(void)
 	color_t c = acc[a];
 	if (a == UI_ACCENT_DEFAULT && ui_theme == 2)
 		c = RGB565(255, 255, 255);	// high contrast has no gray: its default strip is white
+	else if (a == UI_ACCENT_DEFAULT && ui_theme == 3)
+		c = RGB565(170, 236, 246);	// Cryo: pale ice, black text 16.5:1, the dark amber warnings 5.6:1
+	else if (a == UI_ACCENT_DEFAULT && ui_theme == 4)
+		c = RGB565(255, 176, 48);	// Ember Cryo: amber, black text 11.7:1
 	ui_col.strip_bg = c;
 	ui_col.strip_warn = warn[a];
+	if (a == UI_ACCENT_DEFAULT && ui_theme == 4)
+		ui_col.strip_warn = RGB565(0, 32, 120);	// dark blue on amber 7.8:1; the dark amber would be 3.9:1
 	if (a != UI_ACCENT_DEFAULT) {
 		ui_col.focus = c;
 		ui_col.focus_fg = RGB565(0, 0, 0);
@@ -78,7 +85,7 @@ static void accent_apply(void)
 
 void ui_theme_set(uint8_t theme)
 {
-	if (!CONFIG_UI_COLOR)
+	if (!CONFIG_UI_COLOR || theme > 4)
 		theme = 0;	// the dark theme only
 	ui_theme = theme;
 	if (gfx_bpp() == 1)
@@ -108,6 +115,36 @@ void ui_theme_set(uint8_t theme)
 		ui_col.focus = RGB565(0, 0, 255);
 		ui_col.hint_bg = RGB565(0, 0, 0);
 		ui_col.priv = RGB565(0, 255, 255);
+	} else if (theme == 3) {
+		// Cryo: a teal-black ground with ice text, cyan-teal lines and a pale ice status strip; signal orange for TX.
+		// Contrast on the ground: text 18.5, quiet text 8.4, TX 6.9, RX 12.9, warning 13.4; text on the focus 4.9. The idle
+		// color is the divider color: it leaves the 16-color panel a slot
+		ui_col.bg = RGB565(3, 13, 18);
+		ui_col.fg = RGB565(224, 250, 255);
+		ui_col.dim = RGB565(124, 176, 190);
+		ui_col.line = RGB565(20, 92, 112);
+		ui_col.tx = RGB565(255, 104, 40);
+		ui_col.rx = RGB565(0, 232, 196);
+		ui_col.warn = RGB565(255, 204, 0);
+		ui_col.idle = RGB565(20, 92, 112);
+		ui_col.focus = RGB565(0, 116, 146);
+		ui_col.hint_bg = RGB565(8, 30, 38);
+		ui_col.priv = RGB565(96, 172, 255);
+	} else if (theme == 4) {
+		// Ember Cryo: the same ground with cream and copper text, a burnt-orange focus, red TX against the amber strip
+		// and aqua RX. Contrast on the ground: text 17.5, quiet text 8.5, TX 6.0, RX 12.9, warning 16.4; text on the
+		// focus 6.2. The idle color is the divider color: it leaves the 16-color panel a slot, and its pill text 6.9
+		ui_col.bg = RGB565(3, 13, 18);
+		ui_col.fg = RGB565(255, 238, 214);
+		ui_col.dim = RGB565(200, 160, 116);
+		ui_col.line = RGB565(20, 96, 116);
+		ui_col.tx = RGB565(255, 76, 60);
+		ui_col.rx = RGB565(0, 232, 196);
+		ui_col.warn = RGB565(255, 232, 110);
+		ui_col.idle = RGB565(20, 96, 116);
+		ui_col.focus = RGB565(150, 66, 8);
+		ui_col.hint_bg = RGB565(8, 30, 38);
+		ui_col.priv = RGB565(104, 192, 255);
 	} else {
 		ui_col.bg = RGB565(0, 0, 0);
 		ui_col.fg = RGB565(255, 255, 255);
@@ -123,6 +160,9 @@ void ui_theme_set(uint8_t theme)
 	}
 	ui_col.pill_fg = RGB565(255, 255, 255);
 	ui_col.pill_dark_fg = RGB565(0, 0, 0);
+	// The empty signal bars on the filled strip: the theme's idle color, except where that is a theme color that looks
+	// wrong against the strips (Cryo and Ember Cryo's idle is their teal divider): the neutral gray every strip color suits
+	ui_col.strip_off = theme == 3 || theme == 4 ? RGB565(96, 96, 96) : ui_col.idle;
 	accent_apply();
 }
 
@@ -145,6 +185,7 @@ void ui_layout_init(void)
 
 	if (gfx_bpp() == 1) {
 		ui_col.bg = 0; ui_col.fg = ui_col.dim = ui_col.line = ui_col.tx = ui_col.rx = ui_col.warn = ui_col.idle = ui_col.focus = ui_col.priv = 1;
+		ui_col.strip_off = 1;
 		ui_col.pill_fg = ui_col.pill_dark_fg = 0;
 		ui_col.hint_bg = 0;
 	}
@@ -387,7 +428,7 @@ static int draw_top_as(const radio_view_t *v, radio_state_t st, const ui_state_t
 		}
 		int sw = bh + 4;
 		rx -= sw + f->w / 2;
-		gfx_icon_bars(rx, ty + f->ascent - bh - 1, sw, bh + 1, 4, rssi_bars(v->rssi_dbm), sfg, filled ? ui_col.idle : ui_col.line);
+		gfx_icon_bars(rx, ty + f->ascent - bh - 1, sw, bh + 1, 4, rssi_bars(v->rssi_dbm), sfg, filled ? ui_col.strip_off : ui_col.line);
 	}
 	// Icons one cell high, drawn from lines: an envelope with the unread count, a padlock while the keys are locked
 	int ih = f->ascent - 2 < 5 ? 5 : f->ascent - 2, iy = ty + f->ascent - ih;
