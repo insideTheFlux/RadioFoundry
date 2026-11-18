@@ -122,16 +122,33 @@ MMDVMHost or a CPS on the same serial port: the host link switches by what it re
 
 ### 7.1 VOX
 
-Untested on the radio. VOX has no analog level tap here: it measures the microphone on the codec ADC's mic PCM
+Not working on this radio yet: it is off by default (`BOARD_NOT_WRITTEN += VOX`; `make BOARD=dm32 CONFIG_VOX=y` builds it).
+VOX has no analog level tap here: it measures the microphone on the codec ADC's mic PCM
 ([hardware-dm32.md](../spec/hardware-dm32.md) 9, `radio-features.md` 3.4). In idle FM receive the microphone route
-(GPIO 0x2E) is held low so the codec hears it.
+(GPIO 0x2E) is held low so the codec can hear it.
+
+Bench results (2026-11, a dummy load, the FM VFO at the lowest power, `tot_s` 5):
+
+| Check | Result |
+|---|---|
+| The meter runs in idle FM receive | Yes: `mic lvl ... n N on`, N up by 100 a second |
+| A signal on the cable's host-to-radio line (0.3 s of 0x55 at 6000 baud, `tests/hil/test_mic_uart_inject.py`) reaches it | Yes: `pm` 0 before, 2075 to 2413 after (level 66 to 68) |
+| VOX keys on that tone | At sensitivity 8 (level 36 to beat) yes; at 5 (level 60) no, the tone's blocks stayed under it |
+| It releases after the tail | **No**, with the cable in: still keyed 4 s after a 0.5 s tone with a 2 s tail, also with one request in that time. While keyed the level read 6 to 8 with bursts to 61 |
+| The real microphone (cable out, loud voice close to it, sensitivity 8) | **Nothing**: `pm` 0, VOX never keyed |
+| VOX after a PTT tap | **Latches**: a one second PTT tap, then the radio kept keying itself in `tot_s` cycles for more than 10 s with nobody talking, cable in or out, and stopped on its own |
+
+Open: why the real microphone reads flat in idle FM receive while the cable line gets through (the codec's
+MIC2 / ADC state, the route); why VOX keys and holds after a transmission (the end of transmit, or the transmitter's
+own noise on the mic line, against a release that needs two quiet seconds; a guard after transmit and a release
+threshold under the key threshold are the usual remedies, in core code shared by every radio).
 
 | Check | Expected | If not |
 |---|---|---|
 | Diagnostics line `mic lvl L pk P n N on pm M` (pm: the loudest block since the diagnostics reset, `rfoundry_debug.py reset`), FM channel, `vox.level` being read (a poll every 50 ms keeps the meter on) | N grows by about 100 a second and the line ends `on`: the mic PCM flows in idle FM receive. This needs no sound, so it works with the programming cable in. The cable cuts the microphone but its host-to-radio line reaches the mic input: 0.3 s of `0x55` at 6000 baud (`tests/hil/test_mic_uart_inject.py`) should raise pm well above the quiet value | N stays 0 or `off`: the PCM interrupt (`audio_pcm.c`) or the route, GPIO 0x2E must be 0 here (`speaker_source()`) |
-| Debug link view `vox.level` (poll it), FM channel, squelch closed | Rises when someone talks at the radio, falls back to near 0 in silence | Stays 0: the PCM interrupt (`audio_pcm.c`) or the mic route, GPIO 0x2E must be 0 here (`speaker_source()`) |
-| `vox.mic=1`, talk | The radio keys after the VOX delay and unkeys after the hold | Threshold and gain (`radio-features.md` 3.4) |
-| PTT, then release | Normal FM transmit; the route is 1 only during the transmission | `fm_tx()` and `speaker_source()` |
+| Cable out, VOX on, a loud voice close to the microphone, then cable in: `pm` | Above the level to beat (sensitivity 5: 1232, 8: 176) | `pm` 0: the microphone doesn't reach the meter (the case now) |
+| One second PTT tap, then silence | The radio does not key again | It keys and holds (the case now) |
+| Keyed by VOX, then silence | It releases when the tail has passed | It holds until `tot_s` (the case now) |
 
 ## 8. DMR receive
 

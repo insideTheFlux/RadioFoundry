@@ -19,10 +19,13 @@ CONFIG_DISPLAY_INSET_LEFT ?= 10
 CONFIG_DISPLAY_INSET_RIGHT ?= 10
 CONFIG_DISPLAY_INSET_TOP ?= 5
 CONFIG_DISPLAY_INSET_BOTTOM ?= 5
+# VOX is off until the microphone reaches its meter and its release is fixed (docs/testing/dm32-bringup.md 7.1). CONFIG_VOX=y builds it
+CONFIG_VOX ?= n
 # The platform's three TCP connections; a fourth costs about 1.4 KB of main RAM. ci's maximal configuration has
 # every switch but USB and USB_NETWORK (platform/hrc7000/config.mk), and NAND_STORAGE (below), and also keeps about
 # 0.5 KB free
 BOARD_UNSUPPORTED += NAND_STORAGE	# the data flash is SPI NOR, GD25Q128 class (docs/spec/hardware-dm32.md 10)
 # What the hardware can do but this radio's driver or glue doesn't yet (docs/build-config.md, "Unsupported, not
 # written, unconfirmed"): off by default, and off in ci's maximal configuration too
+BOARD_NOT_WRITTEN += VOX	# hal_power_t.mic_level is hooked, but the microphone doesn't reach its meter in idle FM receive and VOX latches on after a transmission (dm32-bringup.md 7.1)
 BOARD_NOT_WRITTEN += AUDIO_PROBE	# no board.audio_tap yet

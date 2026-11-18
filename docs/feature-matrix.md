@@ -44,7 +44,7 @@ is `tools/bringup.py list --radio <id>`.
 | `fm_tx_tones` | not recorded | pass (seed) | not recorded | not recorded | not written | not recorded | pass, needs re-run |
 | `tone_burst_key` | not recorded | not recorded | not recorded | not recorded | not recorded | not recorded | not recorded |
 | `dtmf` | not recorded | not recorded | not recorded | not recorded | not written | not recorded | pass, needs re-run |
-| `vox` | not recorded | not recorded | not recorded | not written | not recorded | not recorded | pass, needs re-run |
+| `vox` | not written | not recorded | not recorded | not written | not recorded | not recorded | pass, needs re-run |
 | `battery_save` | pass (seed) | pass (seed) | not recorded | not recorded | not recorded | not recorded | pass, needs re-run |
 | `am_rx` | not recorded | ✕ | not recorded | ✕ | ✕ | ✕ | ✕ |
 | `bcast_fm` | not recorded | ✕ | not recorded | not written | ✕ | ✕ | ✕ |
@@ -240,7 +240,7 @@ clock`; ? = not known yet). No driver reads the clock yet ([radio-features.md](s
 | `FM_TX_TONES` | ● | ● | ● | ● | … | ● | ● |
 | `DTMF` | ● | ● | ● | ● | … | ● | ● |
 | `RX_EXT` | ● | ● | ● | ● | … | ● | … |
-| `VOX` | ● | ● | ● | … | ● | ● | ● |
+| `VOX` | … | ● | ● | … | ● | ● | ● |
 | `REF_TRIM` | ● | ● | ● | ● | ● | ● | ● |
 | `BATTERY_SAVE` | ● | ● | ● | ● | ● | ● | ● |
 | `VIBRATE` | ? | ✕ | ● | ✕ | ✕ | ✕ | ✕ |

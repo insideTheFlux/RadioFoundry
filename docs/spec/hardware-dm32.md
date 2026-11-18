@@ -261,7 +261,7 @@ CTRL_STOP 0x20, CH_VLD 0x24, PD_SEOC_TIME 0x28, P2S_EN 0x2C, DATA_AB 0x30 (A in 
 | Signal | How it is read | Scale |
 |---|---|---|
 | Battery | Single scan, CH_VLD = 0x04 (channel C = ADC2_IN), INTR = 0x10004, PD_SEOC_TIME = 0xA20, wait INTR_STA bit 2, DATA_CD bits 9:0 | volts × 10 = raw / 8.2 (so raw 672 = 8.2 V). RadioFoundry uses raw / 8.32: at 8.21 V by raw / 8.2 a meter on the pack read 8.09 V (2026-10-16). Thresholds used: 8.2 V full, 6.4 / 6.2 V low-battery hysteresis, 5.5 V power-off |
-| Mic level (VOX) | Not read from the ADC. The level is measured on the codec ADC's mic PCM (`platform/hrc7000/audio_pcm.c`, `drivers/audio/miclevel`), with `PIN_MIC_PATH` (GPIO 0x2E) low in idle FM receive so the codec hears the microphone. The stock firmware's ADC channel D read (CH_VLD = 0x05, DATA_CD bits 25:16) probably reads nothing: single scan converts only channel A, and IO_DIPLEX2 leaves ADC0/ADC3 pins as GPIO | Level 0-100 from `hal_power_t.mic_level` (untested on the radio) |
+| Mic level (VOX) | Not read from the ADC. The level is measured on the codec ADC's mic PCM (`platform/hrc7000/audio_pcm.c`, `drivers/audio/miclevel`), with `PIN_MIC_PATH` (GPIO 0x2E) low in idle FM receive so the codec hears the microphone. The stock firmware's ADC channel D read (CH_VLD = 0x05, DATA_CD bits 25:16) probably reads nothing: single scan converts only channel A, and IO_DIPLEX2 leaves ADC0/ADC3 pins as GPIO | Level 0-100 from `hal_power_t.mic_level`. On the radio: the cable's line reaches it, the real microphone reads flat (dm32-bringup.md 7.1) |
 | Volume knob | **Not read at all** (the variable for it is never written) | — |
 
 IO_DIPLEX2 = 0x0FC80100 at boot leaves ADC1_IN and ADC2_IN analog (bits 20, 21 clear) and ADC0, ADC3..7 as GPIO (datasheet bit map). So the analog inputs available are channels B and C. Which one is the volume pot is unknown.
@@ -1464,7 +1464,7 @@ Hardware behaviors that bite a fresh implementation, and what is still open.
 | 2 | DCS needs the code written to CDCSS_ADDR (TX) and the FD6818 side set up (RX); setting FM_MOD bits alone sends nothing | No DCS without both |
 | 3 | The FD6818 CTCSS tone value must not be truncated to whole tens of Hz before scaling | Wrong CTCSS frequency |
 | 4 | The volume knob works on the amplifier. RadioFoundry has no `hal_radio_t.volume` here: the FM chip's register 0x48 (`BBBF`, the post-init and mode-entry lists in section 8) is written only at mode entry and a chip gain below an analog knob would not "override" it, so the debug link's volume operation answers "unavailable" (unverified) | No volume control from the radio core |
-| 5 | Whether the mic PCM carries the microphone in idle FM receive with GPIO 0x2E low (VOX, [dm32-bringup.md](../testing/dm32-bringup.md) 7.1) | VOX level stays 0 otherwise |
+| 5 | Why the real microphone reads flat on the mic PCM in idle FM receive with GPIO 0x2E low, while the cable's line gets through ([dm32-bringup.md](../testing/dm32-bringup.md) 7.1) | VOX cannot hear a voice (the case now) |
 | 6 | Timer naming clash: the SDK calls the timer at 0x14000000 "Timer 0", the manual calls it "Timer 1"; both "VECTOR_TIMER0" and "VECTOR_TIMER1" are vector 33 | Use the address and the vector, not the name |
 | 7 | Timer 3 is the DMR PA one-shot and Timer 4 the AFSK top-up; a battery poll must not use either | Keep the assignment consistent |
 | 8 | UART1's transmit register is at the UART1 base, not UART3's | No GPS commands could be sent (none are needed) |
