@@ -543,7 +543,7 @@ run-rf: at1846sTest subaudioTest
 
 # The SKY72310 synthesizer's divider words against the data sheet and a register model, the HR_C5000 variant of the
 # HR_C6000 driver, and the GPS NMEA line framing and receive ring the GPS drivers share
-TESTS   += sky72310Test hrc5000Test nmeaLineTest gpsRxTest
+TESTS   += sky72310Test hrc5000Test nmeaLineTest gpsRxTest wallclockTest
 
 sky72310Test: sky72310Test.c $(ROOT)/drivers/rf/sky72310/sky72310.c $(ROOT)/drivers/rf/sky72310/sky72310.h
 	$(CC) $(CFLAGS) -Wshadow -o $@ sky72310Test.c $(ROOT)/drivers/rf/sky72310/sky72310.c
@@ -553,6 +553,9 @@ HRC5K := $(ROOT)/drivers/modem/hrc5000/hrc5000.c $(ROOT)/drivers/modem/hrc_commo
          $(ROOT)/core/dmr/ambe/ambeFec.c $(ROOT)/core/dmr/fec/dmrFec.c
 hrc5000Test: hrc5000Test.c $(HRC5K) $(wildcard $(ROOT)/drivers/modem/hrc5000/*.h $(ROOT)/drivers/modem/hrc_common/*.h) $(ROOT)/hal/hal_dmr_modem.h
 	$(CC) $(CFLAGS) -I$(ROOT)/hal -Wshadow -o $@ hrc5000Test.c $(HRC5K)
+
+wallclockTest: wallclockTest.c $(CORE)/clock/wallclock.c $(CORE)/clock/wallclock.h
+	$(CC) $(CFLAGS) -Wshadow -o $@ wallclockTest.c $(CORE)/clock/wallclock.c
 
 nmeaLineTest: nmeaLineTest.c $(ROOT)/drivers/gps/nmea_line/nmea_line.c $(ROOT)/drivers/gps/nmea_line/nmea_line.h
 	$(CC) $(CFLAGS) -Wshadow -o $@ nmeaLineTest.c $(ROOT)/drivers/gps/nmea_line/nmea_line.c
@@ -588,11 +591,12 @@ adckeysTest: adckeysTest.c $(ROOT)/drivers/input/adckeys/adckeys.c $(ROOT)/drive
 	$(CC) $(CFLAGS) -Wshadow -o $@ adckeysTest.c $(ROOT)/drivers/input/adckeys/adckeys.c
 
 run: run-chips
-run-chips: sky72310Test hrc5000Test nmeaLineTest gpsRxTest gpsBaudTest gpsPowerTest adckeysTest codecDescTest
+run-chips: sky72310Test hrc5000Test nmeaLineTest gpsRxTest wallclockTest gpsBaudTest gpsPowerTest adckeysTest codecDescTest
 	./sky72310Test
 	./hrc5000Test
 	./nmeaLineTest
 	./gpsRxTest
+	./wallclockTest
 	./gpsBaudTest
 	./gpsPowerTest
 	./adckeysTest
