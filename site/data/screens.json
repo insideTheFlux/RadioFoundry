@@ -88,6 +88,37 @@
    "group": "home",
    "needs": []
   },
+  "home_clock": {
+   "group": "home",
+   "needs": [
+    "CLOCK"
+   ]
+  },
+  "home_clock_12h": {
+   "group": "home",
+   "needs": [
+    "CLOCK"
+   ]
+  },
+  "home_clock_unset": {
+   "group": "home",
+   "needs": [
+    "CLOCK"
+   ]
+  },
+  "home_clock_rx": {
+   "group": "home",
+   "needs": [
+    "CLOCK"
+   ]
+  },
+  "home_dual_clock": {
+   "group": "home",
+   "needs": [
+    "CLOCK",
+    "DUAL_WATCH"
+   ]
+  },
   "home_locked": {
    "group": "home",
    "needs": []
