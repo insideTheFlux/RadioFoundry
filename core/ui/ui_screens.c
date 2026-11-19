@@ -415,6 +415,15 @@ static int draw_top_as(const radio_view_t *v, radio_state_t st, const ui_state_t
 		ui_col.dim = dim;
 		return L->strip_h;
 	}
+	// The time of day, measured first so the mode word can give way to it: it shows only in the room the mode, its
+	// word and the status icons leave (a space either side), and nothing while the clock is off or was never set
+	char hm[10];
+	hm[0] = 0;
+	if (!merged && s->clock_mode != 0 && s->clock_hm != UI_CLOCK_NONE) {
+		wc_civil_t t = { .hour = (uint8_t)(s->clock_hm / 60), .min = (uint8_t)(s->clock_hm % 60) };
+		wc_fmt_hm(hm, sizeof hm, &t, s->clock_mode == 1);
+	}
+	int tw = hm[0] ? gfx_text_width(f, hm) + f->w : 0;	// its width and the space before it
 	// Left side: the mode, and one mode word when there is room for it with a space either side. In dual watch the
 	// mode is the selected channel's (the tuned one alternates) and the word is DUAL
 	const char *mw = mode_word(v);
@@ -426,7 +435,13 @@ static int draw_top_as(const radio_view_t *v, radio_state_t st, const ui_state_t
 		mw = "FM";
 	int lx = gfx_text(f, x, ty, mw, sfg);
 #if CONFIG_DUAL_WATCH
-	if (s->dual.on && !v->aprs_tx && strip_fits(f, lx, rx, TR(TOP_CHIP_DUAL, "DUAL")))
+	// DUAL gives way to the time: the full word when it fits beside the time, else its first letter (a fit problem is
+	// fixed with shorter text, docs/ux/principles.md 5), else the word alone where there is no room for the time
+	if (s->dual.on && !v->aprs_tx && strip_fits(f, lx, rx - tw, TR(TOP_CHIP_DUAL, "DUAL")))
+		lx = gfx_text(f, lx + f->w, ty, TR(TOP_CHIP_DUAL, "DUAL"), swarn);
+	else if (s->dual.on && !v->aprs_tx && tw && strip_fits(f, lx, rx - tw, TR(TOP_CHIP_DUAL_SHORT, "D")))
+		lx = gfx_text(f, lx + f->w, ty, TR(TOP_CHIP_DUAL_SHORT, "D"), swarn);
+	else if (s->dual.on && !v->aprs_tx && strip_fits(f, lx, rx, TR(TOP_CHIP_DUAL, "DUAL")))
 		lx = gfx_text(f, lx + f->w, ty, TR(TOP_CHIP_DUAL, "DUAL"), swarn);
 	else
 #endif
@@ -464,16 +479,10 @@ static int draw_top_as(const radio_view_t *v, radio_state_t st, const ui_state_t
 		}
 	}
 #endif
-	// The time of day, last: the mode, the word and the status icons keep their places, and the time shows only in
-	// the room they leave (a space either side), measured like the words. It sits against the right group. Nothing
-	// is drawn while the clock is off or unset
-	if (!merged && s->clock_mode != 0 && s->clock_hm != UI_CLOCK_NONE) {
-		wc_civil_t t = { .hour = (uint8_t)(s->clock_hm / 60), .min = (uint8_t)(s->clock_hm % 60) };
-		char hm[10];
-		wc_fmt_hm(hm, sizeof hm, &t, s->clock_mode == 1);
-		int tw = gfx_text_width(f, hm);
-		if (lx + tw + 2 * f->w <= rx)
-			gfx_text(f, rx - tw - f->w / 2, ty, hm, sfg);
+	// The time of day, against the right group, in the room left of it
+	if (tw && lx + tw + f->w <= rx) {
+		int x_t = rx - tw + f->w - f->w / 2;
+		gfx_text(f, x_t, ty, hm, sfg);
 	}
 	if (!titled)
 		return L->strip_h;

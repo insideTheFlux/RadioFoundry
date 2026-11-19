@@ -4438,6 +4438,11 @@ msgid "DUAL"
 msgstr "DUAL"
 
 #: core/ui/ui_screens.c
+msgctxt "TOP_CHIP_DUAL_SHORT"
+msgid "D"
+msgstr "D"
+
+#: core/ui/ui_screens.c
 msgctxt "TOP_CHIP_SCAN"
 msgid "SCAN"
 msgstr "ESC"
