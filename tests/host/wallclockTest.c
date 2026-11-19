@@ -124,14 +124,18 @@ int main(void)
 	char b[16];
 	wc_civil_t t1 = { 2026, 11, 18, 14, 32, 5, 3 }, t2 = { 2026, 11, 18, 0, 5, 0, 3 }, t3 = { 2026, 11, 18, 12, 0, 0, 3 },
 	           t4 = { 2026, 11, 18, 13, 7, 0, 3 }, t5 = { 2026, 11, 18, 9, 5, 0, 3 };
-	CHECK(wc_fmt_hm(b, sizeof b, &t1, true) == 5 && !strcmp(b, "14:32"));
-	CHECK(wc_fmt_hm(b, sizeof b, &t2, true) == 5 && !strcmp(b, "00:05"));
-	CHECK(wc_fmt_hm(b, sizeof b, &t5, true) == 5 && !strcmp(b, "09:05"));
-	CHECK(wc_fmt_hm(b, sizeof b, &t1, false) == 7 && !strcmp(b, "2:32 PM"));
-	CHECK(wc_fmt_hm(b, sizeof b, &t2, false) == 8 && !strcmp(b, "12:05 AM"));
-	CHECK(wc_fmt_hm(b, sizeof b, &t3, false) == 8 && !strcmp(b, "12:00 PM"));
-	CHECK(wc_fmt_hm(b, sizeof b, &t4, false) == 7 && !strcmp(b, "1:07 PM"));
-	CHECK(wc_fmt_hm(b, 4, &t1, true) == 3 && !strcmp(b, "14:"));		// truncated, still terminated
+	CHECK(wc_fmt_hm(b, sizeof b, &t1, WC_HM_24) == 5 && !strcmp(b, "14:32"));
+	CHECK(wc_fmt_hm(b, sizeof b, &t2, WC_HM_24) == 5 && !strcmp(b, "00:05"));
+	CHECK(wc_fmt_hm(b, sizeof b, &t5, WC_HM_24) == 5 && !strcmp(b, "09:05"));
+	CHECK(wc_fmt_hm(b, sizeof b, &t1, WC_HM_12) == 7 && !strcmp(b, "2:32 PM"));
+	CHECK(wc_fmt_hm(b, sizeof b, &t2, WC_HM_12) == 8 && !strcmp(b, "12:05 AM"));
+	CHECK(wc_fmt_hm(b, sizeof b, &t3, WC_HM_12) == 8 && !strcmp(b, "12:00 PM"));
+	CHECK(wc_fmt_hm(b, sizeof b, &t4, WC_HM_12) == 7 && !strcmp(b, "1:07 PM"));
+	CHECK(wc_fmt_hm(b, sizeof b, &t1, WC_HM_12_SHORT) == 5 && !strcmp(b, "2:32P"));
+	CHECK(wc_fmt_hm(b, sizeof b, &t2, WC_HM_12_SHORT) == 6 && !strcmp(b, "12:05A"));
+	CHECK(wc_fmt_hm(b, sizeof b, &t3, WC_HM_12_SHORT) == 6 && !strcmp(b, "12:00P"));
+	CHECK(wc_fmt_hm(b, sizeof b, &t5, WC_HM_12_SHORT) == 5 && !strcmp(b, "9:05A"));
+	CHECK(wc_fmt_hm(b, 4, &t1, WC_HM_24) == 3 && !strcmp(b, "14:"));		// truncated, still terminated
 
 	printf("# wallclockTest: %d checks, %s\n", checks, failures ? "FAILED" : "PASSED");
 	return failures != 0;

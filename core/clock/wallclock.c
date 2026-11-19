@@ -122,12 +122,13 @@ void wc_clear(void)
 }
 
 // Hand formatted, not snprintf: the C library's printf costs tens of kilobytes of flash on the radios
-size_t wc_fmt_hm(char *buf, size_t n, const wc_civil_t *c, bool h24)
+size_t wc_fmt_hm(char *buf, size_t n, const wc_civil_t *c, wc_hm_t form)
 {
 	if (n == 0)
 		return 0;
 	char t[9];
 	size_t k = 0;
+	bool h24 = form == WC_HM_24;
 	unsigned h = h24 ? c->hour : (c->hour % 12 ? c->hour % 12 : 12);
 	if (h24 || h >= 10)
 		t[k++] = (char)('0' + h / 10);
@@ -135,10 +136,12 @@ size_t wc_fmt_hm(char *buf, size_t n, const wc_civil_t *c, bool h24)
 	t[k++] = ':';
 	t[k++] = (char)('0' + c->min / 10 % 10);
 	t[k++] = (char)('0' + c->min % 10);
-	if (!h24) {
+	if (form == WC_HM_12) {
 		t[k++] = ' ';
 		t[k++] = c->hour < 12 ? 'A' : 'P';
 		t[k++] = 'M';
+	} else if (form == WC_HM_12_SHORT) {
+		t[k++] = c->hour < 12 ? 'A' : 'P';
 	}
 	size_t m = k < n - 1 ? k : n - 1;
 	for (size_t i = 0; i < m; i++)

@@ -44,8 +44,10 @@ bool wc_now_local(uint32_t now_ms, int offset_min, wc_civil_t *out);
 // Forget the time (a test, or a source that turned out wrong).
 void wc_clear(void);
 
-// "14:32" (h24), or "2:32 PM" (12 hour, no leading zero, 12:xx for the hour after midnight and noon). Returns the
-// length; the buffer needs at least 9 bytes.
-size_t wc_fmt_hm(char *buf, size_t n, const wc_civil_t *c, bool h24);
+// The time of day as text, in three forms: WC_HM_24 "14:32", WC_HM_12 "2:32 PM" (no leading zero; 12:xx for the hour
+// after midnight and noon) and WC_HM_12_SHORT "2:32P", the same as WC_HM_12 without the space and with one letter, for
+// a display with no room for the long one. Returns the length; the buffer needs at least 9 bytes.
+typedef enum { WC_HM_24, WC_HM_12, WC_HM_12_SHORT } wc_hm_t;
+size_t wc_fmt_hm(char *buf, size_t n, const wc_civil_t *c, wc_hm_t form);
 
 #endif
