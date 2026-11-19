@@ -365,6 +365,10 @@ static void link_section(dl_text_t *t)
 		(unsigned)u.focus, (unsigned)u.count, (unsigned)u.locked, u.unlock_key);
 	dl_text(t, "ui.banner=%s\nui.toast=%s\nui.query=%s\nui.draws=%u\nui.dual=%u\n", u.banner, u.toast, u.query,
 		(unsigned)u.draws, u.dual);
+#if CONFIG_CLOCK
+	dl_text(t, "ui.clock_mode=%u\nui.clock_hm=%u\nui.utc_off_min=%d\n", (unsigned)u.clock_mode, (unsigned)u.clock_hm,
+		(int)u.utc_off_min);
+#endif
 	dl_text(t, "input.idle_ms=%u\nui.backlight=%u\n", (unsigned)input_idle_ms(), ui_backlight());
 	if (board.display != NULL && board.display->panel != NULL) {
 		hal_display_panel_t pi;

@@ -14,7 +14,6 @@
 //     that fails tells the UI with a UI_EV_SAVE_FAILED event (a toast).
 #include <string.h>
 #include "board.h"
-#include "clock/wallclock.h"
 #include "ui_svc.h"
 #include "i18n.h"
 #include "radio/radio.h"
@@ -27,6 +26,9 @@
 #include "dmr/dmr_emergency.h"	// the emergency tone (Settings > Sound); stubs without CONFIG_DMR_EMERGENCY
 #include "hal_time.h"
 #include "config.h"
+#if CONFIG_CLOCK
+#include "clock/wallclock.h"
+#endif
 #if CONFIG_HOSTLINK
 #include "hostlink/hostlink.h"
 #endif
@@ -326,12 +328,14 @@ static __attribute__((noinline)) int32_t setting_get_flash(uint8_t id)
 	case UI_SET_LABEL_FIRST:
 		settings_read(&st);
 		return (st.updown_home & SETTINGS_HOME_LABEL_FIRST) != 0;
+#if CONFIG_CLOCK
 	case UI_SET_CLOCK:
 		settings_read(&st);
 		return st.clock_mode <= 2 ? st.clock_mode : 0;
 	case UI_SET_UTC_OFFSET:
 		settings_read(&st);
 		return st.utc_off_q * 15;		// minutes
+#endif
 	case UI_SET_LOW_BATTERY:
 		settings_read(&st);
 		return st.low_batt_pct;
@@ -499,6 +503,7 @@ bool ui_svc_setting_set(uint8_t id, int32_t value)
 					    st->updown_home & ~SETTINGS_HOME_LABEL_FIRST);
 		settings_end(hal_millis());
 		return true;
+#if CONFIG_CLOCK
 	case UI_SET_CLOCK:
 		st = settings_begin();
 		st->clock_mode = (uint8_t)clamp16(value, 0, 2);
@@ -510,6 +515,7 @@ bool ui_svc_setting_set(uint8_t id, int32_t value)
 		st->utc_off_q = (int8_t)((value < WC_OFFSET_MIN_MIN ? WC_OFFSET_MIN_MIN : value > WC_OFFSET_MIN_MAX ? WC_OFFSET_MIN_MAX : value) / 15);
 		settings_end(hal_millis());
 		return true;
+#endif
 	case UI_SET_VIBRATE:
 		st = settings_begin();
 		st->ui_flags = (uint8_t)(value != 0 ? st->ui_flags & ~SETTINGS_UI_NO_VIBRATE :

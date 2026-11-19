@@ -6,7 +6,9 @@
 #include "board.h"
 #include "ui_screens.h"
 #include "fmt.h"
+#if CONFIG_CLOCK
 #include "clock/wallclock.h"
+#endif
 #include "i18n.h"
 #include "ui_svc.h"
 #include "cjk_font.h"	// CJK_FONT_H: the line height a CJK language needs (CONFIG_LANG_ZH)
@@ -418,6 +420,8 @@ static int draw_top_as(const radio_view_t *v, radio_state_t st, const ui_state_t
 	// The time of day, measured first so the mode word can give way to it: it shows only in the room the mode, its
 	// word and the status icons leave (a space either side), and nothing while the clock is off or was never set.
 	// The 12 hour form has a short one (2:32P) for a display with no room for 2:32 PM
+#if CONFIG_CLOCK
+	int tw, tws;		// each form's width and the space before it; 0 = no time to draw
 	char hm[10], hms[10];
 	hm[0] = hms[0] = 0;
 	if (!merged && s->clock_mode != 0 && s->clock_hm != UI_CLOCK_NONE) {
@@ -426,8 +430,9 @@ static int draw_top_as(const radio_view_t *v, radio_state_t st, const ui_state_t
 		if (s->clock_mode == 2)
 			wc_fmt_hm(hms, sizeof hms, &t, WC_HM_12_SHORT);
 	}
-	int tw = hm[0] ? gfx_text_width(f, hm) + f->w : 0;	// each form's width and the space before it
-	int tws = hms[0] ? gfx_text_width(f, hms) + f->w : 0;
+	tw = hm[0] ? gfx_text_width(f, hm) + f->w : 0;
+	tws = hms[0] ? gfx_text_width(f, hms) + f->w : 0;
+#endif
 	// Left side: the mode, and one mode word when there is room for it with a space either side. In dual watch the
 	// mode is the selected channel's (the tuned one alternates) and the word is DUAL
 	const char *mw = mode_word(v);
@@ -444,7 +449,9 @@ static int draw_top_as(const radio_view_t *v, radio_state_t st, const ui_state_t
 	// docs/ux/principles.md 5), else the word alone where there is no room for any time
 	const char *dw = NULL;
 	if (s->dual.on && !v->aprs_tx) {
-		const char *dword = TR(TOP_CHIP_DUAL, "DUAL"), *dinit = TR(TOP_CHIP_DUAL_SHORT, "D");
+		const char *dword = TR(TOP_CHIP_DUAL, "DUAL");
+#if CONFIG_CLOCK
+		const char *dinit = TR(TOP_CHIP_DUAL_SHORT, "D");
 		if (strip_fits(f, lx, rx - tw, dword))
 			dw = dword;
 		else if (tws && strip_fits(f, lx, rx - tws, dword))
@@ -453,7 +460,9 @@ static int draw_top_as(const radio_view_t *v, radio_state_t st, const ui_state_t
 			dw = dinit;
 		else if (tws && strip_fits(f, lx, rx - tws, dinit))
 			dw = dinit;
-		else if (strip_fits(f, lx, rx, dword))
+		else
+#endif
+		if (strip_fits(f, lx, rx, dword))
 			dw = dword;
 	}
 	if (dw != NULL)
@@ -494,11 +503,13 @@ static int draw_top_as(const radio_view_t *v, radio_state_t st, const ui_state_t
 		}
 	}
 #endif
+#if CONFIG_CLOCK
 	// The time of day, against the right group, in the room left of it: the long form, else the short one
 	if (tw && lx + tw + f->w <= rx)
 		gfx_text(f, rx - tw + f->w - f->w / 2, ty, hm, sfg);
 	else if (tws && lx + tws + f->w <= rx)
 		gfx_text(f, rx - tws + f->w - f->w / 2, ty, hms, sfg);
+#endif
 	if (!titled)
 		return L->strip_h;
 	// Tall display: the title on its own row, underlined

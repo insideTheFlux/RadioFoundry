@@ -211,6 +211,9 @@
 #ifndef CONFIG_SCAN
 #define CONFIG_SCAN			1
 #endif
+#ifndef CONFIG_CLOCK
+#define CONFIG_CLOCK			1
+#endif
 #ifndef CONFIG_DUAL_WATCH
 #define CONFIG_DUAL_WATCH		CONFIG_SCAN
 #endif

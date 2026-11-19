@@ -20,7 +20,9 @@
 #include "ui_svc_aprs.h"
 #include "ui_screens.h"		// ui_layout_init: a line of Chinese needs a taller font
 #include "fmt.h"
+#if CONFIG_CLOCK
 #include "clock/wallclock.h"
+#endif
 #include "i18n.h"
 #include "input/input.h"
 #include "radio/tones.h"
@@ -34,7 +36,9 @@
 #endif
 
 #define UI_STACK_MAX		6
+#if CONFIG_CLOCK
 static uint32_t clock_fix_ms;	// when the latest position fix the clock took came in (ui_svc_fix_time)
+#endif
 #define TOAST_MS		1800
 #define VOLUME_MS		3000	// the volume screen closes this long after the last key, the knob's bar after its last turn
 #define ENTRY_TIMEOUT_MS	10000
@@ -1902,7 +1906,9 @@ void ui_app_init(void)
 	recent_tx = false;
 #endif
 	ev_head = ev_tail = 0;
+#if CONFIG_CLOCK
 	clock_fix_ms = 0;
+#endif
 	sp = 0;
 	stack[0].scr = SCR_HOME;
 	for (uint8_t id = 0; id < UI_SET_COUNT; id++)
@@ -1910,7 +1916,10 @@ void ui_app_init(void)
 	static const uint8_t ui_ids[] = { UI_SET_HINTS, UI_SET_LARGE_TEXT, UI_SET_AUTO_LOCK_S, UI_SET_BRIGHTNESS,
 					  UI_SET_ALIAS_SHOW, UI_SET_PTT_LOCKED, UI_SET_HEAR_ALL_DEFAULT, UI_SET_MESSAGE_TONE,
 					  UI_SET_UPDOWN_HOME, UI_SET_LABEL_FIRST, UI_SET_LOW_BATTERY, UI_SET_AUTO_OFF_MIN, UI_SET_THEME, UI_SET_ACCENT,
-					  UI_SET_STRIP, UI_SET_VIBRATE, UI_SET_VOLUME, UI_SET_LANGUAGE, UI_SET_CLOCK, UI_SET_UTC_OFFSET,
+					  UI_SET_STRIP, UI_SET_VIBRATE, UI_SET_VOLUME, UI_SET_LANGUAGE,
+#if CONFIG_CLOCK
+					  UI_SET_CLOCK, UI_SET_UTC_OFFSET,
+#endif
 					  UI_SET_KNOB_WHEN_LOCKED,
 #if CONFIG_DUAL_WATCH
 					  UI_SET_DUAL_TALK_BACK,
@@ -1997,10 +2006,12 @@ void ui_apply_setting(uint8_t id, int32_t v)
 		break;
 	case UI_SET_UPDOWN_HOME: ui_st.updown = (uint8_t)(v >= 0 && v <= 2 ? v : 0); break;
 	case UI_SET_LABEL_FIRST: ui_st.label_first = v != 0; break;
+#if CONFIG_CLOCK
 	case UI_SET_CLOCK: ui_st.clock_mode = (uint8_t)(v >= 0 && v <= 2 ? v : 0); break;
 	case UI_SET_UTC_OFFSET:
 		ui_st.utc_off_min = (int16_t)(v >= WC_OFFSET_MIN_MIN && v <= WC_OFFSET_MIN_MAX ? v : 0);
 		break;
+#endif
 	case UI_SET_LOW_BATTERY: ui_st.low_batt_pct = (uint8_t)(v >= 0 && v <= 50 ? v : 15); batt_warned = false; break;
 	case UI_SET_AUTO_OFF_MIN: ui_st.auto_off_min = clamp_u16(v); off_warned = false; break;
 	case UI_SET_PTT_LOCKED:
@@ -2633,6 +2644,7 @@ bool ui_app_tick(const radio_view_t *v, uint32_t now_ms)
 		dirty = true;
 	}
 	ui_st.battery_pct = bat;
+#if CONFIG_CLOCK
 	// The time of day for the status strip: the minute changes redraw it (core/clock; nothing while off or unset)
 	static uint16_t clock_seen = UI_CLOCK_NONE;
 	// The clock follows the GPS time (or a host's NMEA, which carries it too): the date and time of the latest fix, once
@@ -2654,6 +2666,7 @@ bool ui_app_tick(const radio_view_t *v, uint32_t now_ms)
 		dirty = true;
 	}
 	ui_st.clock_hm = hm;
+#endif
 	battery_tick(v);
 	// A banner's countdown ticks; one that waits for the user has none
 	bool fast = v->state == RS_TX || stack[sp].scr == SCR_DIAG || (ui_st.banner.kind != UI_BANNER_NONE && !ui_st.banner.hold);
@@ -2740,6 +2753,11 @@ void ui_app_status(ui_app_status_t *s)
 	s->locked = ui_st.locked;
 	s->unlock_key = has_quick_key ? "quick" : has_unlock_key ? "back" : "none";
 	s->field_use = (d->flags & SF_FIELD) != 0;
+#if CONFIG_CLOCK
+	s->clock_mode = ui_st.clock_mode;
+	s->clock_hm = ui_st.clock_hm;
+	s->utc_off_min = ui_st.utc_off_min;
+#endif
 	s->banner = ui_st.banner.kind != UI_BANNER_NONE ? ui_st.banner.title : "";
 	s->toast = ui_st.toast != NULL ? ui_st.toast : "";
 	if (strchr(s->toast, TEXT_ALT_OPEN[0]) != NULL) {

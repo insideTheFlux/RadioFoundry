@@ -50,7 +50,7 @@ bool ui_svc_gps_sat(uint8_t i, ui_gps_sat_t *out)
 #endif
 #endif
 
-#if CONFIG_POSITION
+#if CONFIG_POSITION && CONFIG_CLOCK
 #include "ui_svc.h"
 #include "position/position.h"
 #include "hal_time.h"

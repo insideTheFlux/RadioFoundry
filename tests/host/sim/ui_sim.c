@@ -2197,6 +2197,7 @@ bool ui_svc_position(ui_position_t *out)
 	return true;
 }
 
+#if CONFIG_CLOCK
 // The date and time of the latest fix (gpstime:<hhmmss>,<ddmmyy>); none until a script gives one
 static uint32_t sim_fix_hms = 0xFFFFFFFFu, sim_fix_date, sim_fix_ms;
 bool ui_svc_fix_time(uint32_t *utc_hms, uint32_t *date, uint32_t *ms)
@@ -2209,6 +2210,7 @@ bool ui_svc_fix_time(uint32_t *utc_hms, uint32_t *date, uint32_t *ms)
 	return true;
 }
 
+#endif
 bool ui_svc_gps_sat(uint8_t i, ui_gps_sat_t *out)
 {
 	if (i >= SIM_SATS)
@@ -2346,7 +2348,9 @@ static void advance(uint32_t ms)
 
 void sim_reset(const sim_geom_t *g, sim_map_t map)
 {
+#if CONFIG_CLOCK
 	sim_fix_hms = 0xFFFFFFFFu;	// no position fix yet
+#endif
 	emergency_on = false;
 	sim_foreign = sim_held = false;
 	disp.width = g->w;
@@ -3353,6 +3357,7 @@ static bool run_token(char *t, char *err, size_t len)
 		advance(200);
 		return true;
 	}
+#if CONFIG_CLOCK
 	if (strcmp(t, "gpstime") == 0 && arg != NULL) {
 		unsigned h, d;
 		if (sscanf(arg, "%u,%u", &h, &d) != 2)
@@ -3384,6 +3389,7 @@ static bool run_token(char *t, char *err, size_t len)
 		advance(1100);
 		return true;
 	}
+#endif
 	if (strcmp(t, "battery") == 0 && arg != NULL) {
 		battery = (uint8_t)atoi(arg);
 		advance(1100);

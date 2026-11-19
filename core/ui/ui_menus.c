@@ -6660,6 +6660,7 @@ static const set_item_t s_sigtones[] = {
 	ACTION(TRN(SIG_ROW_IDLE_STEPS, "Idle steps"), "signaling chain frequency length pitch channel free", SA_SIG_IDLE),
 };
 #endif
+#if CONFIG_CLOCK
 static const int16_t v_clock[] = { 0, 1, 2 };
 static const tr_id_t n_clock[] = { TRN(VALUE_OFF, "Off"), TRN(SET_VALUE_CLOCK_24_HOUR, "24 hour"),
 	TRN(SET_VALUE_CLOCK_12_HOUR, "12 hour") };
@@ -6680,6 +6681,7 @@ static const tr_id_t n_utc_offset[] = { TRX(SET_VALUE_UTC_M12, "UTC-12"), TRX(SE
 	TRX(SET_VALUE_UTC_P9, "UTC+9"), TRX(SET_VALUE_UTC_P9_30, "UTC+9:30"), TRX(SET_VALUE_UTC_P10, "UTC+10"),
 	TRX(SET_VALUE_UTC_P10_30, "UTC+10:30"), TRX(SET_VALUE_UTC_P11, "UTC+11"), TRX(SET_VALUE_UTC_P12, "UTC+12"),
 	TRX(SET_VALUE_UTC_P12_45, "UTC+12:45"), TRX(SET_VALUE_UTC_P13, "UTC+13"), TRX(SET_VALUE_UTC_P14, "UTC+14") };
+#endif
 static const set_item_t s_display[] = {
 	NUMBER(TRN(SET_LABEL_BRIGHTNESS, "Brightness"), "backlight", UI_SET_BRIGHTNESS, 10, 100, 10, "%"),
 	LIST(TRN(SET_LABEL_BACKLIGHT_DIM_OFF, "Backlight Dim/Off"), "timeout", UI_SET_BACKLIGHT_S, v_backlight,
@@ -6695,8 +6697,10 @@ static const set_item_t s_display[] = {
 	TOGGLE(TRN(SET_LABEL_TG_NAME_FIRST, "Talkgroup name first"), "talk line label TG number Home",
 		UI_SET_LABEL_FIRST),
 #endif
+#if CONFIG_CLOCK
 	LIST(TRN(SET_LABEL_CLOCK, "Clock"), "time of day hour 24 12", UI_SET_CLOCK, v_clock, n_clock),
 	LIST(TRN(SET_LABEL_TIME_ZONE, "Time zone"), "UTC offset clock", UI_SET_UTC_OFFSET, v_utc_offset, n_utc_offset),
+#endif
 	// Last, so the rows above keep their places; its search words are "language" in other languages, for a user who
 	// can't read the English
 	ACTION(TRN(SET_LABEL_LANGUAGE, "Language"), "idioma langue sprache lingua taal jezyk", SA_LANGUAGE),

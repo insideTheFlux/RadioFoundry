@@ -49,6 +49,11 @@ typedef struct {
 	bool dual;		// the UI runs dual watch: it has taken over a watch the debug link started
 	int8_t volbar;		// the knob's volume bar shows this step, -1 = not shown
 	bool volbar_top;	// ... in the status strip: the last frame drew no hint row
+#if CONFIG_CLOCK
+	uint8_t clock_mode;	// Settings > Display > Clock: 0 off, 1 24 hour, 2 12 hour
+	uint16_t clock_hm;	// the local time of day shown, hour * 60 + minute, 0xFFFF = none (off, or never set)
+	int16_t utc_off_min;	// Settings > Display > Time zone, in minutes
+#endif
 } ui_app_status_t;
 void ui_app_status(ui_app_status_t *st);
 // The label of the focused row on a list screen ("" otherwise), for scripted checks
