@@ -649,17 +649,26 @@ released; then 20 polls held in a row (2 s at the 100 ms poll) mean off. A short
 
 ### 5.6 Time of day
 
-RadioFoundry keeps no wall clock. `hal_time.h` gives only time since start-up, and that is what every record uses: the crash
-log's `uptime_ms`, messages (`ui_msg_t.age_ms`), call history and the APRS station list ("14m ago"). Nothing on the screen shows a time of day, so a
-radio never shows a made-up one after power-on.
+Records keep time since start-up. `hal_time.h` gives only that, and it is what the crash log's `uptime_ms`, messages
+(`ui_msg_t.age_ms`), call history and the APRS station list ("14m ago") use. They never show a time of day.
 
-The only time of day is the UTC time a GPS or host NMEA fix carries. It travels with that position into DMR GPS and
-LRRP reports. A fixed position carries none, and the reports leave the time out (`utc_hms` 0xFFFFFFFF, date 0).
+The time of day comes from the UTC time and date a GPS or host NMEA fix carries. It travels with that position into DMR
+GPS and LRRP reports (a fixed position carries none: `utc_hms` 0xFFFFFFFF, date 0). With `CONFIG_CLOCK` the UI also
+keeps a software clock (`core/clock/wallclock.c`) that follows it and shows it in the status strip:
+
+| Part | Behavior |
+|---|---|
+| Source | The date and time of the latest position fix with a date (`ui_svc_fix_time`: the board GPS, or a host's NMEA), taken once per fix on the UI task. The clock then runs from the millisecond counter. A restart loses it until the next fix |
+| Settings > Display | **Clock**: Off (default), 24 hour, 12 hour. **Time zone**: one of the 38 UTC offsets in use, UTC-12 to UTC+14 (default UTC). Kept in `settings_t.clock_mode` and `utc_off_q` ([settings-store.md](settings-store.md)). No daylight saving rule: the user changes the offset |
+| Unknown time | Nothing is drawn while the clock is off or never set. The radio never shows a made-up time |
+| Status strip | Right-aligned beside the icons, in the room the mode, its word and the icons leave (a space either side), measured like the words. 12 hour has a short form, `2:32P`, where `2:32 PM` does not fit. In dual watch the order is `DUAL` and the time, `DUAL` and the short time, `D` and the time, `D` and the short time, then `DUAL` alone ([ui.md](ui.md), principle 5: a fit problem is fixed with shorter text first) |
+| Debug link | `ui.clock_mode ui.clock_hm ui.utc_off_min` in the `link` view section ([debuglink.md](debuglink.md) 3.7) |
 
 Some radios have a real-time clock, and some keep it running through power-off. `board.toml` `[hardware] clock`
 records which, with its source (`backed`, `unbacked`, `none`, or `unknown`), and the feature matrix and the site show
-it. A clock driver arrives behind a hardware switch (`CONFIG_RTC`, `hardware` in `tests/hil/features.toml`). Until GPS,
-the network or the user sets it, the radio shows "no time", and records keep using uptime or mark the time unknown.
+it. No RTC driver exists yet: it arrives behind a hardware switch (`CONFIG_RTC`, `hardware` in
+`tests/hil/features.toml`) and would set the same clock through `wc_set_utc()` at start-up and when the time changes.
+Until the GPS, the network or the user sets it, the radio shows no time.
 
 ### 5.7 LEDs
 

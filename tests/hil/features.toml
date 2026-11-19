@@ -213,6 +213,12 @@ switch = "VIBRATE"
 hardware = "a vibration motor"
 spec = "docs/spec/radio-features.md"
 
+[feature.clock]
+switch = "CLOCK"
+hardware = "a GPS receiver"
+spec = "docs/spec/radio-features.md"
+source = ["core/clock"]
+
 [feature.gps]
 switch = "GPS"
 hardware = "a GPS receiver"

@@ -80,6 +80,7 @@ is `tools/bringup.py list --radio <id>`.
 | `beep` | not recorded | not recorded | not recorded | not recorded | not recorded | not recorded | partial, needs re-run | partial, needs re-run |
 | `signaling_tones` | not recorded | not recorded | not recorded | not recorded | off | not recorded | not recorded | not recorded |
 | `vibrate` | off | ✕ | not recorded | ✕ | ✕ | ✕ | ✕ | ✕ |
+| `clock` | not recorded | not recorded | not recorded | not recorded | not recorded | not recorded | not recorded | not recorded |
 | `gps` | pass (seed) | not recorded | ✕ | not recorded | not recorded | not recorded | not recorded | ✕ |
 | `position` | not recorded | not recorded | not recorded | not recorded | not recorded | not recorded | not recorded | pass |
 | `dmr_data_rx` | not recorded | pass (seed) | pass (seed) | not recorded | not recorded | not recorded | pass, needs re-run | pass, needs re-run |
@@ -292,6 +293,7 @@ clock`; ? = not known yet). No driver reads the clock yet ([radio-features.md](s
 | `P25_TRUNK` | ● | ● | ● | ● | … | ● | ● | ● |
 | `NXDN` | ● | ● | ● | ● | … | ● | ● | ● |
 | `AIR_RAW` | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| `CLOCK` | ● | ● | ● | ● | ● | ● | ● | ● |
 | Voltage reading (board, no switch) | Battery | Battery | Battery | None | Battery | Battery | Supply | Battery |
 | Clock kept through power-off (board, no switch) | Yes | ? | Yes | ? | ? | ? | ? | No (only while on) |
 <!-- end generated -->
@@ -334,6 +336,7 @@ clock`; ? = not known yet). No driver reads the clock yet ([radio-features.md](s
 | Contact editor: a new contact from Find or a call's actions (name, ID, type, timeslot) | `CONTACT_EDIT` | 1,580 | 1,580 | Needs `CHANNEL_EDIT` and `DMR`. Measured 2026-10-30 on the default builds |
 | Volume bar when a knob the MCU reads turns (#354) | `VOLUME_BAR` | 496 | 428 | Measured 2026-11-08 on the default builds; shows only on a radio with such a knob. Off, the volume screen keeps the segment drawing it now shares (about 90 bytes) |
 | Key assignment (Settings > Keys, codeplug) | `KEY_ASSIGN` | 2,120 | 2,188 | Up to 9 keys. Measured 2026-10-24 |
+| Time of day in the status strip (Settings > Display > Clock and Time zone) | `CLOCK` | — | — | Set from the GPS time, so it needs a position source (`POSITION`). Measured on the DM-32UV only, 2026-11-18: +2,724 B flash and +32 B RAM over main with it on, +432 B flash (translation strings) and +0 B RAM with it off; not measured on the STM32F4 radios |
 | Scan, band scan, dual watch, nuisance delete | `SCAN` | 2,576 | 3,032 |  |
 | Dual watch: A and B in any zone or the VFO, PTT on the selected one, its screens, talk back | `DUAL_WATCH` | 10,864 | 11,456 | Needs `SCAN`. Without it, only the debug link's dual watch (two channels of one zone). Measured 2026-10-21 on the dual watch branch, default builds |
 | Beeps and alert tones | `BEEP` | 1,552 | 1,800 |  |

@@ -61,6 +61,8 @@ Some settings are on the menu before the feature behind them exists, or don't ap
 | Large text | On, Off | Off | Home shows only the status line, the channel and the talk target, large | Works |
 | Hint row | On, Off | On | The bottom line with key hints | Works |
 | Talkgroup name first | On, Off | Off | Home's talk line reads "World TG 91" instead of "TG 91 World": on a small screen the name is what fits. A side key set to **TG name / number** switches it too. On radios with DMR | Works |
+| Clock | Off, 24 hour, 12 hour | Off | The time of day in the top status line, from the GPS time. It shows after the radio has a GPS fix, and only where the line has room beside the mode, its word and the icons: on a small screen or in dual watch it may not fit (12 hour then shows as 2:32P). Nothing is drawn until the time is known. On radios with a GPS | Works (checked with the GPS time on one radio) |
+| Time zone | UTC-12 to UTC+14 | UTC | The offset added to the GPS time for the Clock. Pick yours; there is no daylight saving rule, so change it when the clocks change | Works (checked with the GPS time on one radio) |
 | Language | English, Español, Italiano | English, or the Radio language picked in the web installer | The language of the menus and messages. A factory reset goes back to that default. The list shows every language RadioFoundry has; one that isn't in your firmware is dimmed. Pick it when you install with the web flasher to get it ([Installing](02-installing.md)). Names, callsigns and the standard radio abbreviations (TG, CC, VFO) stay as they are | Works |
 
 ### Talk & listen (key 3)

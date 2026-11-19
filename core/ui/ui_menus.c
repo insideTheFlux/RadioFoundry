@@ -6698,7 +6698,7 @@ static const set_item_t s_display[] = {
 		UI_SET_LABEL_FIRST),
 #endif
 #if CONFIG_CLOCK
-	LIST(TRN(SET_LABEL_CLOCK, "Clock"), "time of day hour 24 12", UI_SET_CLOCK, v_clock, n_clock),
+	LIST(TRN(SET_LABEL_CLOCK, "Clock"), "time of day hour", UI_SET_CLOCK, v_clock, n_clock),
 	LIST(TRN(SET_LABEL_TIME_ZONE, "Time zone"), "UTC offset clock", UI_SET_UTC_OFFSET, v_utc_offset, n_utc_offset),
 #endif
 	// Last, so the rows above keep their places; its search words are "language" in other languages, for a user who
