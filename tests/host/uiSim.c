@@ -50,6 +50,10 @@ static const struct { const char *name, *script; } gallery[] = {
 	{ "home_large_text", "ok 7 2 down down down down down ok long:back" },
 	{ "home_monitor", "down mondown" },
 	{ "home_plain", "strip:off" },	// Settings > Display > Filled status bar off
+	{ "home_clock", "clock:24h,14:32,-480" },	// Settings > Display > Clock: 24 hour, UTC-8
+	{ "home_clock_12h", "clock:12h,14:32,-480" },
+	{ "home_clock_unset", "clock:24h" },		// the clock is on but was never set: no time is drawn
+	{ "home_clock_rx", "clock:24h,14:32,-480 rx:9991234,91,g,Q1ABC_Joe_-_Boston,_MA" },
 	{ "home_locked", "long:quick 5" },
 	{ "home_usb_ip", "usbnet:on" },
 	{ "home_usb_ip_up", "usbnet:up" },
@@ -176,6 +180,7 @@ static const struct { const char *name, *script; } gallery[] = {
 	{ "dual_pick", "quick 7 ctx 3" },
 	{ "dual_zones", "quick 7 ctx 3 up up up up ok" },
 	{ "home_dual", "quick 7 ctx 3 5 ok wait:3000" },
+	{ "home_dual_clock", "quick 7 ctx 3 5 ok wait:3000 clock:24h,14:32,-480" },	// no room beside DUAL: no time
 	{ "home_dual_rx_b", "quick 7 ctx 3 5 ok wait:3000 tune:b call:9991234,91,g tune:a call:9997777,3100,g wait:4000 tune:b rx:9991234,91,g wait:2500" },
 	{ "home_dual_heard", "quick 7 ctx 3 5 ok wait:3000 tune:b call:9991234,91,g tune:a call:9997777,3100,g wait:4000" },
 	// The wait after a call on B: a look at A found a signal there

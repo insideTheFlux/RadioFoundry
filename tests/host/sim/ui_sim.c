@@ -54,6 +54,8 @@
 //   contacts:<n>        the same up to contact n (a list just past 128 at 220)
 //   channels:full       every channel number past the 40 holds one ("Far 41" ...), but every third: a list past 128
 //   color:<name>        the highlight color (sim_color_find); strip:on|off  the filled status bar (Settings > Display)
+//   clock:<mode>[,<hh:mm>[,<offset>]]  Settings > Display > Clock: off, 24h or 12h, the local time hh:mm, and the UTC
+//                       offset in minutes (the clock is set to that time on 2026-11-18); without a time it stays unset
 //   theme:<name>        the color theme (sim_theme_find: dark, light, high_contrast)
 //   splash              draw the boot screen (put it last: nothing redraws over it)
 //   splash:loader       the same splash as the stub entry draws it, while the flashing tools have the radio
@@ -65,6 +67,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ui_sim.h"
+#include "clock/wallclock.h"
 // The board is changed at run time here (display, key map): this file defines it writable, the UI sees it const
 #define board board_as_declared
 #include "board.h"
@@ -3334,6 +3337,27 @@ static bool run_token(char *t, char *err, size_t len)
 		ui_svc_setting_set(id, v);
 		ui_apply_setting(id, v);
 		advance(200);
+		return true;
+	}
+	if (strcmp(t, "clock") == 0 && arg != NULL) {
+		char m[8] = "", hm[8] = "";
+		int off = 0;
+		int n = sscanf(arg, "%7[^,],%7[^,],%d", m, hm, &off);
+		ui_st.clock_mode = strcmp(m, "24h") == 0 ? 1 : strcmp(m, "12h") == 0 ? 2 : 0;
+		ui_st.utc_off_min = (int16_t)off;
+		wc_clear();
+		if (n >= 2) {
+			int h, mi;
+			wc_civil_t c = { .year = 2026, .month = 11, .day = 18 };
+			int64_t u;
+			if (sscanf(hm, "%d:%d", &h, &mi) == 2) {
+				c.hour = (uint8_t)h;
+				c.min = (uint8_t)mi;
+				wc_unix_from_civil(&c, &u);
+				wc_set_utc(u - (int64_t)off * 60, hal_millis());	// local time hh:mm at that offset
+			}
+		}
+		advance(1100);
 		return true;
 	}
 	if (strcmp(t, "battery") == 0 && arg != NULL) {

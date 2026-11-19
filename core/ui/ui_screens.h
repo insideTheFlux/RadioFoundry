@@ -91,10 +91,18 @@ typedef struct {
 #endif
 
 // What the screens show besides the radio view; owned by the UI (ui_app.c)
+#define UI_CLOCK_NONE	0xFFFFu
+
 typedef struct {
 	uint32_t now_ms;
 	uint8_t battery_pct;
 	bool no_battery;		// the radio has no battery: no icon, percentage or battery pages (board_has_battery)
+	// The time of day in the status strip (core/clock): clock_mode is 0 off, 1 24 hour, 2 12 hour; clock_hm the local
+	// time as hour * 60 + minute, UI_CLOCK_NONE while the clock is off or was never set (nothing is drawn, never a
+	// made-up time); utc_off_min is added to UTC
+	uint8_t clock_mode;
+	uint16_t clock_hm;
+	int16_t utc_off_min;
 	bool dmr_off;			// the DMR channel's modem has been off a while (ui_app.c), not just a moment
 	bool entry;			// VFO frequency entry in progress
 	uint8_t entry_len;

@@ -20,6 +20,7 @@
 #include "ui_svc_aprs.h"
 #include "ui_screens.h"		// ui_layout_init: a line of Chinese needs a taller font
 #include "fmt.h"
+#include "clock/wallclock.h"
 #include "i18n.h"
 #include "input/input.h"
 #include "radio/tones.h"
@@ -2626,6 +2627,17 @@ bool ui_app_tick(const radio_view_t *v, uint32_t now_ms)
 		dirty = true;
 	}
 	ui_st.battery_pct = bat;
+	// The time of day for the status strip: the minute changes redraw it (core/clock; nothing while off or unset)
+	static uint16_t clock_seen = UI_CLOCK_NONE;
+	uint16_t hm = UI_CLOCK_NONE;
+	wc_civil_t wt;
+	if (ui_st.clock_mode != 0 && wc_now_local(now_ms, ui_st.utc_off_min, &wt))
+		hm = (uint16_t)(wt.hour * 60 + wt.min);
+	if (hm != clock_seen) {
+		clock_seen = hm;
+		dirty = true;
+	}
+	ui_st.clock_hm = hm;
 	battery_tick(v);
 	// A banner's countdown ticks; one that waits for the user has none
 	bool fast = v->state == RS_TX || stack[sp].scr == SCR_DIAG || (ui_st.banner.kind != UI_BANNER_NONE && !ui_st.banner.hold);

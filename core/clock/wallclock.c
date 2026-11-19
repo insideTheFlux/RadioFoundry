@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 The RadioFoundry Authors
 // Time of day: see wallclock.h
-#include <stdio.h>
 #include "clock/wallclock.h"
 
 // Days since 1970-01-01 of a calendar date, and the date of a day count: the proleptic Gregorian calendar counted
@@ -122,14 +121,28 @@ void wc_clear(void)
 	clk.set = false;
 }
 
+// Hand formatted, not snprintf: the C library's printf costs tens of kilobytes of flash on the radios
 size_t wc_fmt_hm(char *buf, size_t n, const wc_civil_t *c, bool h24)
 {
-	int r;
-	if (h24) {
-		r = snprintf(buf, n, "%02u:%02u", c->hour, c->min);
-	} else {
-		unsigned h = c->hour % 12;
-		r = snprintf(buf, n, "%u:%02u %s", h ? h : 12, c->min, c->hour < 12 ? "AM" : "PM");
+	if (n == 0)
+		return 0;
+	char t[9];
+	size_t k = 0;
+	unsigned h = h24 ? c->hour : (c->hour % 12 ? c->hour % 12 : 12);
+	if (h24 || h >= 10)
+		t[k++] = (char)('0' + h / 10);
+	t[k++] = (char)('0' + h % 10);
+	t[k++] = ':';
+	t[k++] = (char)('0' + c->min / 10 % 10);
+	t[k++] = (char)('0' + c->min % 10);
+	if (!h24) {
+		t[k++] = ' ';
+		t[k++] = c->hour < 12 ? 'A' : 'P';
+		t[k++] = 'M';
 	}
-	return r < 0 ? 0 : (size_t)r < n ? (size_t)r : n - 1;
+	size_t m = k < n - 1 ? k : n - 1;
+	for (size_t i = 0; i < m; i++)
+		buf[i] = t[i];
+	buf[m] = 0;
+	return m;
 }

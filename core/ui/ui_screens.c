@@ -6,6 +6,7 @@
 #include "board.h"
 #include "ui_screens.h"
 #include "fmt.h"
+#include "clock/wallclock.h"
 #include "i18n.h"
 #include "ui_svc.h"
 #include "cjk_font.h"	// CJK_FONT_H: the line height a CJK language needs (CONFIG_LANG_ZH)
@@ -463,6 +464,17 @@ static int draw_top_as(const radio_view_t *v, radio_state_t st, const ui_state_t
 		}
 	}
 #endif
+	// The time of day, last: the mode, the word and the status icons keep their places, and the time shows only in
+	// the room they leave (a space either side), measured like the words. It sits against the right group. Nothing
+	// is drawn while the clock is off or unset
+	if (!merged && s->clock_mode != 0 && s->clock_hm != UI_CLOCK_NONE) {
+		wc_civil_t t = { .hour = (uint8_t)(s->clock_hm / 60), .min = (uint8_t)(s->clock_hm % 60) };
+		char hm[10];
+		wc_fmt_hm(hm, sizeof hm, &t, s->clock_mode == 1);
+		int tw = gfx_text_width(f, hm);
+		if (lx + tw + 2 * f->w <= rx)
+			gfx_text(f, rx - tw - f->w / 2, ty, hm, sfg);
+	}
 	if (!titled)
 		return L->strip_h;
 	// Tall display: the title on its own row, underlined
