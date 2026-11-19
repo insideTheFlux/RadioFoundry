@@ -3763,6 +3763,16 @@ msgid "Idle steps"
 msgstr "Pasos libre"
 
 #: core/ui/ui_menus.c
+msgctxt "SET_VALUE_CLOCK_24_HOUR"
+msgid "24 hour"
+msgstr "24 horas"
+
+#: core/ui/ui_menus.c
+msgctxt "SET_VALUE_CLOCK_12_HOUR"
+msgid "12 hour"
+msgstr "12 horas"
+
+#: core/ui/ui_menus.c
 msgctxt "SET_LABEL_BRIGHTNESS"
 msgid "Brightness"
 msgstr "Brillo"
@@ -3796,6 +3806,16 @@ msgstr "Texto grande"
 msgctxt "SET_LABEL_HINT_ROW"
 msgid "Hint row"
 msgstr "Ayuda de comandos"
+
+#: core/ui/ui_menus.c
+msgctxt "SET_LABEL_CLOCK"
+msgid "Clock"
+msgstr "Reloj"
+
+#: core/ui/ui_menus.c
+msgctxt "SET_LABEL_TIME_ZONE"
+msgid "Time zone"
+msgstr "Zona horaria"
 
 #: core/ui/ui_menus.c
 msgctxt "SET_LABEL_LANGUAGE"

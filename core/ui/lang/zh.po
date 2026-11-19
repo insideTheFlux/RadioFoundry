@@ -3765,6 +3765,16 @@ msgid "Idle steps"
 msgstr "空闲步骤"
 
 #: core/ui/ui_menus.c
+msgctxt "SET_VALUE_CLOCK_24_HOUR"
+msgid "24 hour"
+msgstr "24时"
+
+#: core/ui/ui_menus.c
+msgctxt "SET_VALUE_CLOCK_12_HOUR"
+msgid "12 hour"
+msgstr "12时"
+
+#: core/ui/ui_menus.c
 msgctxt "SET_LABEL_BRIGHTNESS"
 msgid "Brightness"
 msgstr "亮度"
@@ -3798,6 +3808,16 @@ msgstr "大字体"
 msgctxt "SET_LABEL_HINT_ROW"
 msgid "Hint row"
 msgstr "提示行"
+
+#: core/ui/ui_menus.c
+msgctxt "SET_LABEL_CLOCK"
+msgid "Clock"
+msgstr "时钟"
+
+#: core/ui/ui_menus.c
+msgctxt "SET_LABEL_TIME_ZONE"
+msgid "Time zone"
+msgstr "时区"
 
 #: core/ui/ui_menus.c
 msgctxt "SET_LABEL_LANGUAGE"

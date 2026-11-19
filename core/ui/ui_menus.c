@@ -6660,6 +6660,26 @@ static const set_item_t s_sigtones[] = {
 	ACTION(TRN(SIG_ROW_IDLE_STEPS, "Idle steps"), "signaling chain frequency length pitch channel free", SA_SIG_IDLE),
 };
 #endif
+static const int16_t v_clock[] = { 0, 1, 2 };
+static const tr_id_t n_clock[] = { TRN(VALUE_OFF, "Off"), TRN(SET_VALUE_CLOCK_24_HOUR, "24 hour"),
+	TRN(SET_VALUE_CLOCK_12_HOUR, "12 hour") };
+// The UTC offsets in use, in minutes (the clock shows GPS time plus one of these; no daylight saving rule: the user
+// changes the offset)
+static const int16_t v_utc_offset[] = { -720, -660, -600, -570, -540, -480, -420, -360, -300, -240, -210, -180, -120, -60,
+	0, 60, 120, 180, 210, 240, 270, 300, 330, 345, 360, 390, 420, 480, 525, 540, 570, 600, 630, 660, 720, 765, 780, 840 };
+static const tr_id_t n_utc_offset[] = { TRX(SET_VALUE_UTC_M12, "UTC-12"), TRX(SET_VALUE_UTC_M11, "UTC-11"),
+	TRX(SET_VALUE_UTC_M10, "UTC-10"), TRX(SET_VALUE_UTC_M9_30, "UTC-9:30"), TRX(SET_VALUE_UTC_M9, "UTC-9"),
+	TRX(SET_VALUE_UTC_M8, "UTC-8"), TRX(SET_VALUE_UTC_M7, "UTC-7"), TRX(SET_VALUE_UTC_M6, "UTC-6"),
+	TRX(SET_VALUE_UTC_M5, "UTC-5"), TRX(SET_VALUE_UTC_M4, "UTC-4"), TRX(SET_VALUE_UTC_M3_30, "UTC-3:30"),
+	TRX(SET_VALUE_UTC_M3, "UTC-3"), TRX(SET_VALUE_UTC_M2, "UTC-2"), TRX(SET_VALUE_UTC_M1, "UTC-1"),
+	TRX(SET_VALUE_UTC_0, "UTC"), TRX(SET_VALUE_UTC_P1, "UTC+1"), TRX(SET_VALUE_UTC_P2, "UTC+2"),
+	TRX(SET_VALUE_UTC_P3, "UTC+3"), TRX(SET_VALUE_UTC_P3_30, "UTC+3:30"), TRX(SET_VALUE_UTC_P4, "UTC+4"),
+	TRX(SET_VALUE_UTC_P4_30, "UTC+4:30"), TRX(SET_VALUE_UTC_P5, "UTC+5"), TRX(SET_VALUE_UTC_P5_30, "UTC+5:30"),
+	TRX(SET_VALUE_UTC_P5_45, "UTC+5:45"), TRX(SET_VALUE_UTC_P6, "UTC+6"), TRX(SET_VALUE_UTC_P6_30, "UTC+6:30"),
+	TRX(SET_VALUE_UTC_P7, "UTC+7"), TRX(SET_VALUE_UTC_P8, "UTC+8"), TRX(SET_VALUE_UTC_P8_45, "UTC+8:45"),
+	TRX(SET_VALUE_UTC_P9, "UTC+9"), TRX(SET_VALUE_UTC_P9_30, "UTC+9:30"), TRX(SET_VALUE_UTC_P10, "UTC+10"),
+	TRX(SET_VALUE_UTC_P10_30, "UTC+10:30"), TRX(SET_VALUE_UTC_P11, "UTC+11"), TRX(SET_VALUE_UTC_P12, "UTC+12"),
+	TRX(SET_VALUE_UTC_P12_45, "UTC+12:45"), TRX(SET_VALUE_UTC_P13, "UTC+13"), TRX(SET_VALUE_UTC_P14, "UTC+14") };
 static const set_item_t s_display[] = {
 	NUMBER(TRN(SET_LABEL_BRIGHTNESS, "Brightness"), "backlight", UI_SET_BRIGHTNESS, 10, 100, 10, "%"),
 	LIST(TRN(SET_LABEL_BACKLIGHT_DIM_OFF, "Backlight Dim/Off"), "timeout", UI_SET_BACKLIGHT_S, v_backlight,
@@ -6675,6 +6695,8 @@ static const set_item_t s_display[] = {
 	TOGGLE(TRN(SET_LABEL_TG_NAME_FIRST, "Talkgroup name first"), "talk line label TG number Home",
 		UI_SET_LABEL_FIRST),
 #endif
+	LIST(TRN(SET_LABEL_CLOCK, "Clock"), "time of day hour 24 12", UI_SET_CLOCK, v_clock, n_clock),
+	LIST(TRN(SET_LABEL_TIME_ZONE, "Time zone"), "UTC offset clock", UI_SET_UTC_OFFSET, v_utc_offset, n_utc_offset),
 	// Last, so the rows above keep their places; its search words are "language" in other languages, for a user who
 	// can't read the English
 	ACTION(TRN(SET_LABEL_LANGUAGE, "Language"), "idioma langue sprache lingua taal jezyk", SA_LANGUAGE),

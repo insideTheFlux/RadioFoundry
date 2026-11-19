@@ -14,6 +14,7 @@
 //     that fails tells the UI with a UI_EV_SAVE_FAILED event (a toast).
 #include <string.h>
 #include "board.h"
+#include "clock/wallclock.h"
 #include "ui_svc.h"
 #include "i18n.h"
 #include "radio/radio.h"
@@ -325,6 +326,12 @@ static __attribute__((noinline)) int32_t setting_get_flash(uint8_t id)
 	case UI_SET_LABEL_FIRST:
 		settings_read(&st);
 		return (st.updown_home & SETTINGS_HOME_LABEL_FIRST) != 0;
+	case UI_SET_CLOCK:
+		settings_read(&st);
+		return st.clock_mode <= 2 ? st.clock_mode : 0;
+	case UI_SET_UTC_OFFSET:
+		settings_read(&st);
+		return st.utc_off_q * 15;		// minutes
 	case UI_SET_LOW_BATTERY:
 		settings_read(&st);
 		return st.low_batt_pct;
@@ -490,6 +497,17 @@ bool ui_svc_setting_set(uint8_t id, int32_t value)
 		st = settings_begin();
 		st->updown_home = (uint8_t)(value != 0 ? st->updown_home | SETTINGS_HOME_LABEL_FIRST :
 					    st->updown_home & ~SETTINGS_HOME_LABEL_FIRST);
+		settings_end(hal_millis());
+		return true;
+	case UI_SET_CLOCK:
+		st = settings_begin();
+		st->clock_mode = (uint8_t)clamp16(value, 0, 2);
+		settings_end(hal_millis());
+		return true;
+	case UI_SET_UTC_OFFSET:
+		st = settings_begin();
+		// clamp16 is unsigned: the offset runs below zero
+		st->utc_off_q = (int8_t)((value < WC_OFFSET_MIN_MIN ? WC_OFFSET_MIN_MIN : value > WC_OFFSET_MIN_MAX ? WC_OFFSET_MIN_MAX : value) / 15);
 		settings_end(hal_millis());
 		return true;
 	case UI_SET_VIBRATE:

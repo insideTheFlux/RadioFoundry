@@ -229,6 +229,9 @@ typedef struct {
 	uint32_t utc_hms;	// hhmmss, 0xFFFFFFFF unknown
 } ui_position_t;
 bool ui_svc_position(ui_position_t *out);	// false: no GPS on this radio (or off)
+// The date and time of the latest position fix, from the board GPS or a host's NMEA (the clock follows it, core/clock):
+// hhmmss, ddmmyy and when it came in (hal_millis); false when there is none. A fixed position carries no time
+bool ui_svc_fix_time(uint32_t *utc_hms, uint32_t *date, uint32_t *ms);
 // One satellite for the GPS screen's sky plot and signal bars
 enum { UI_GNSS_GPS, UI_GNSS_GLONASS, UI_GNSS_GALILEO, UI_GNSS_BEIDOU, UI_GNSS_QZSS, UI_GNSS_COUNT };
 typedef struct {
@@ -423,6 +426,10 @@ typedef enum {
 	// One step of a chain, set whole (its frequency and length in one write of the settings area): the value is
 	// UI_SIG_STEP(event, step, Hz, ms). Write only
 	UI_SET_SIG_STEP,
+	// The time of day in the status strip (Settings > Display; settings_t.clock_mode / utc_off_q): 0 off, 1 24 hour,
+	// 2 12 hour; and the UTC offset in minutes
+	UI_SET_CLOCK,
+	UI_SET_UTC_OFFSET,
 	UI_SET_COUNT
 } ui_setting_t;
 

@@ -63,6 +63,13 @@ static const flow_t flows[] = {
 	{ "1 next channel", "", "up", "pos=4", 1, false },
 	{ "1 channel 12 by number", "", "1 2 ok", "pos=12 screen=home", 3, false },
 	// A P25 channel (the debug link's mode): named P25 in the strip; FM's tiles say why they are off
+	// The time of day in the status strip (core/clock)
+	{ "clock: 24 hour in the strip", "clock:24h,14:32,-480", "", "screen=home shows=14:32", 0, false },
+	{ "clock: 12 hour in the strip", "clock:12h,14:32,-480", "", "screen=home shows=2:32 hides=14:32", 0, false },
+	{ "clock: on but never set draws no time", "clock:12h", "", "screen=home hides=PM hides=AM", 0, false },
+	{ "clock: off draws no time", "clock:off,14:32,0", "", "screen=home hides=14:32", 0, false },
+	{ "clock: a GPS fix sets it", "clock:24h gpstime:223200,181126", "", "screen=home shows=22:32", 0, false },
+	{ "clock: a GPS fix plus the UTC offset", "clock:24h,00:00,-480 gpstime:223200,181126", "", "screen=home shows=14:32", 0, false },
 	{ "P25 channel shows its mode", "dlmode:p25", "", "mode=p25 screen=home shows=P25 hides=No_tone hides=12.5k hides=25k hides=SQ5", 0, false },
 #if CONFIG_NXDN
 	// NXDN the same way: the power, the RAN sent and the rate in the chips, the group PTT calls on the talk line

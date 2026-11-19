@@ -251,7 +251,11 @@ typedef struct {
 	// copy 60 bytes
 	uint8_t sig_dmr[3];
 	uint8_t sig_fm[3];
-	uint8_t reserved11[2];		// 0
+	// The time of day in the status strip (Settings > Display, core/clock; appended: an older record reads 0 and 0, the
+	// clock off and UTC): clock_mode 0 off, 1 24 hour, 2 12 hour; utc_off_q the UTC offset in 15 minute steps
+	// (-48..56), added to the GPS time
+	uint8_t clock_mode;
+	int8_t utc_off_q;
 } settings_t;
 
 // Pages: settings_t is stored as records of SETTINGS_PAGE_BYTES each (settings-store.md 2.1). Only the pages its size

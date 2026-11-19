@@ -54,6 +54,7 @@
 //   contacts:<n>        the same up to contact n (a list just past 128 at 220)
 //   channels:full       every channel number past the 40 holds one ("Far 41" ...), but every third: a list past 128
 //   color:<name>        the highlight color (sim_color_find); strip:on|off  the filled status bar (Settings > Display)
+//   gpstime:<hhmmss>,<ddmmyy>  a GPS fix with that UTC time and date comes in (the clock follows it when it is on)
 //   clock:<mode>[,<hh:mm>[,<offset>]]  Settings > Display > Clock: off, 24h or 12h, the local time hh:mm, and the UTC
 //                       offset in minutes (the clock is set to that time on 2026-11-18); without a time it stays unset
 //   theme:<name>        the color theme (sim_theme_find: dark, light, high_contrast)
@@ -2196,6 +2197,18 @@ bool ui_svc_position(ui_position_t *out)
 	return true;
 }
 
+// The date and time of the latest fix (gpstime:<hhmmss>,<ddmmyy>); none until a script gives one
+static uint32_t sim_fix_hms = 0xFFFFFFFFu, sim_fix_date, sim_fix_ms;
+bool ui_svc_fix_time(uint32_t *utc_hms, uint32_t *date, uint32_t *ms)
+{
+	if (sim_fix_hms == 0xFFFFFFFFu)
+		return false;
+	*utc_hms = sim_fix_hms;
+	*date = sim_fix_date;
+	*ms = sim_fix_ms;
+	return true;
+}
+
 bool ui_svc_gps_sat(uint8_t i, ui_gps_sat_t *out)
 {
 	if (i >= SIM_SATS)
@@ -2333,6 +2346,7 @@ static void advance(uint32_t ms)
 
 void sim_reset(const sim_geom_t *g, sim_map_t map)
 {
+	sim_fix_hms = 0xFFFFFFFFu;	// no position fix yet
 	emergency_on = false;
 	sim_foreign = sim_held = false;
 	disp.width = g->w;
@@ -3337,6 +3351,16 @@ static bool run_token(char *t, char *err, size_t len)
 		ui_svc_setting_set(id, v);
 		ui_apply_setting(id, v);
 		advance(200);
+		return true;
+	}
+	if (strcmp(t, "gpstime") == 0 && arg != NULL) {
+		unsigned h, d;
+		if (sscanf(arg, "%u,%u", &h, &d) != 2)
+			return false;
+		sim_fix_hms = h;
+		sim_fix_date = d;
+		sim_fix_ms = hal_millis();
+		advance(1100);
 		return true;
 	}
 	if (strcmp(t, "clock") == 0 && arg != NULL) {

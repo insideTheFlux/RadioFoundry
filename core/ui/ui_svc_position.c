@@ -49,3 +49,20 @@ bool ui_svc_gps_sat(uint8_t i, ui_gps_sat_t *out)
 }
 #endif
 #endif
+
+#if CONFIG_POSITION
+#include "ui_svc.h"
+#include "position/position.h"
+#include "hal_time.h"
+
+bool ui_svc_fix_time(uint32_t *utc_hms, uint32_t *date, uint32_t *ms)
+{
+	position_fix_t f;
+	if (position_fix(&f, hal_millis()) == POSITION_SRC_NONE || f.utc_hms == 0xFFFFFFFFu || f.date == 0)
+		return false;
+	*utc_hms = f.utc_hms;
+	*date = f.date;
+	*ms = f.ms;
+	return true;
+}
+#endif
