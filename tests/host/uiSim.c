@@ -183,7 +183,8 @@ static const struct { const char *name, *script; } gallery[] = {
 	{ "dual_zones", "quick 7 ctx 3 up up up up ok" },
 	{ "home_dual", "quick 7 ctx 3 5 ok wait:3000" },
 #if CONFIG_CLOCK
-	{ "home_dual_clock", "quick 7 ctx 3 5 ok wait:3000 clock:24h,14:32,-480" },	// no room beside DUAL: no time
+	{ "home_dual_clock", "quick 7 ctx 3 5 ok wait:3000 clock:24h,14:32,-480" },	// DUAL gives way: D, the time in a small face
+	{ "home_dual_clock_12h", "quick 7 ctx 3 5 ok wait:3000 clock:12h,09:56,-480" },
 #endif
 	{ "home_dual_rx_b", "quick 7 ctx 3 5 ok wait:3000 tune:b call:9991234,91,g tune:a call:9997777,3100,g wait:4000 tune:b rx:9991234,91,g wait:2500" },
 	{ "home_dual_heard", "quick 7 ctx 3 5 ok wait:3000 tune:b call:9991234,91,g tune:a call:9997777,3100,g wait:4000" },

@@ -181,6 +181,9 @@ void ui_layout_init(void)
 	} else {
 		L->tiny = &font_5x8; L->small = &font_5x8; L->medium = f6; L->large = f8;
 	}
+#if CONFIG_CLOCK
+	L->micro = L->tiny->h > f6->h ? f6 : L->tiny;	// one size below the strip's, on the 240 px class's big font too
+#endif
 
 #if CONFIG_LANG_ZH
 	// A CJK character is 16 px tall (core/ui/cjk_font.h), so a line that may hold Chinese needs a 16 px font. Where the
@@ -421,7 +424,7 @@ static int draw_top_as(const radio_view_t *v, radio_state_t st, const ui_state_t
 	// word and the status icons leave (a space either side), and nothing while the clock is off or was never set.
 	// The 12 hour form has a short one (2:32P) for a display with no room for 2:32 PM
 #if CONFIG_CLOCK
-	int tw, tws;		// each form's width and the space before it; 0 = no time to draw
+	int tw, tws, twt;	// each form's width and the space before it; 0 = no time to draw
 	char hm[10], hms[10];
 	hm[0] = hms[0] = 0;
 	if (!merged && s->clock_mode != 0 && s->clock_hm != UI_CLOCK_NONE) {
@@ -432,6 +435,9 @@ static int draw_top_as(const radio_view_t *v, radio_state_t st, const ui_state_t
 	}
 	tw = hm[0] ? gfx_text_width(f, hm) + f->w : 0;
 	tws = hms[0] ? gfx_text_width(f, hms) + f->w : 0;
+	// The last resort: the shortest form in the smallest font, where that is smaller than the strip's
+	const char *hmt = hms[0] ? hms : hm;
+	twt = hmt[0] && L->micro->h < f->h ? gfx_text_width(L->micro, hmt) + f->w : 0;
 #endif
 	// Left side: the mode, and one mode word when there is room for it with a space either side. In dual watch the
 	// mode is the selected channel's (the tuned one alternates) and the word is DUAL
@@ -444,8 +450,8 @@ static int draw_top_as(const radio_view_t *v, radio_state_t st, const ui_state_t
 		mw = "FM";
 	int lx = gfx_text(f, x, ty, mw, sfg);
 #if CONFIG_DUAL_WATCH
-	// DUAL gives way to the time. In this order: the word and the time, the word and the short time, its first letter
-	// and the time, its first letter and the short time (a fit problem is fixed with shorter text,
+	// DUAL gives way to the time. In this order: the word and the time, the word and the short time, the word and
+	// the time in the smallest font, its first letter and each of those three (a fit problem is fixed with shorter text,
 	// docs/ux/principles.md 5), else the word alone where there is no room for any time
 	const char *dw = NULL;
 	if (s->dual.on && !v->aprs_tx) {
@@ -456,9 +462,13 @@ static int draw_top_as(const radio_view_t *v, radio_state_t st, const ui_state_t
 			dw = dword;
 		else if (tws && strip_fits(f, lx, rx - tws, dword))
 			dw = dword;
+		else if (twt && strip_fits(f, lx, rx - twt, dword))
+			dw = dword;
 		else if (tw && strip_fits(f, lx, rx - tw, dinit))
 			dw = dinit;
 		else if (tws && strip_fits(f, lx, rx - tws, dinit))
+			dw = dinit;
+		else if (twt && strip_fits(f, lx, rx - twt, dinit))
 			dw = dinit;
 		else
 #endif
@@ -509,6 +519,8 @@ static int draw_top_as(const radio_view_t *v, radio_state_t st, const ui_state_t
 		gfx_text(f, rx - tw + f->w - f->w / 2, ty, hm, sfg);
 	else if (tws && lx + tws + f->w <= rx)
 		gfx_text(f, rx - tws + f->w - f->w / 2, ty, hms, sfg);
+	else if (twt && lx + twt + f->w <= rx)
+		gfx_text(L->micro, rx - twt + f->w - f->w / 2, ty + (f->h - L->micro->h) / 2, hmt, sfg);	// centered on the cell
 #endif
 	if (!titled)
 		return L->strip_h;

@@ -163,6 +163,9 @@ bool ui_name_is_id(const char *name, uint32_t id, bool private_call);
 // Fonts and region positions for the current display, from gfx_width() / gfx_height()
 typedef struct {
 	const font_t *tiny, *small, *medium, *large;
+#if CONFIG_CLOCK
+	const font_t *micro;	// the smallest face of the display's set: the strip's time of day when no larger one fits
+#endif
 	int strip_h;
 	int zone_y;		// < 0: no zone line on this display
 	int channel_y, talk_y, chips_y;
