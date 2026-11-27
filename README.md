@@ -3,10 +3,12 @@
 
 # Showcase: Home clock, RTC, Scan pulse and Heartbeat, and the Cryo / Ember Cryo themes
 
-Screenshots of RadioFoundry UI work that is not in `main`. Every image is a **simulator render**
-(the host UI gallery in `docs/ux/screens`), not a photo of a radio. The sample channels and names are test data.
+Screenshots of RadioFoundry UI work that is not in `main`. The sheet below is **screen grabs from a DM-32UV**, taken over
+the debug link from a test build (the Home clock, RTC, Scan pulse and Heartbeat, and the Ember Cryo theme together). Every
+other image on this page is a **simulator render** (the host UI gallery in `docs/ux/screens`) with test data. The radio
+grabs sit on a NOAA weather channel.
 
-![The new work: the Home clock, and the Scan pulse and Heartbeat settings](sheet-new-work.png)
+![Screen grabs from a DM-32UV: Home with the clock, the menus and the Display settings in Ember Cryo](sheet-radio-ember-cryo.png)
 
 | Feature | State |
 |---|---|
@@ -40,9 +42,9 @@ Small screens use a smaller font for the time where the usual one does not fit, 
 There is no screen for it: it is a driver. The radio's own clock keeps the time while the radio is off, and the debug
 link reads and sets it (`rfoundry_debug.py rtc get` / `rtc set now`). It is built behind `CONFIG_RTC` (it follows
 `CONFIG_DEBUGLINK`), written for the DM-32UV and shared with the DM-1801 Pro (untested there). It was checked on a
-DM-32UV: set, counting, and through a power cycle with the battery in. The Home clock above takes its time from the GPS.
-Having the clock read the RTC at power-on, before a GPS fix, is built in a local branch that is not published, so it is
-not in these images.
+DM-32UV: set, counting, and through a power cycle with the battery in. The simulator renders below take their time from the
+GPS. The radio grabs at the top come from a test build in which the clock also reads the RTC at power-on, before a GPS fix;
+that part is in a local branch that is not published.
 
 ## Scan pulse and Heartbeat
 
@@ -80,7 +82,8 @@ Rows: Home, dual watch, channel list, transmitting, the Display settings page.
 
 ## Status
 
-- The project's docs list the clock as checked with the GPS time on one radio. These images come from the simulator only.
+- The project's docs list the clock as checked with the GPS time on one radio. The sheet at the top is grabs from that radio;
+  the other images come from the simulator.
 - The themes keep their setting in a settings byte that upstream `main` now uses for something else, so they need rework before any pull request.
 - The clock and themes are not merged and not proposed upstream. The RTC driver and the LED settings are open pull requests
   (above). The project's main repository is [RadioFoundry/RadioFoundry](https://github.com/RadioFoundry/RadioFoundry).
